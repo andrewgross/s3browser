@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-PACKAGE=s3_browser
+PACKAGE=s3browser
 CUSTOM_PIP_INDEX=pypi
 TESTS_VERBOSITY=2
 # </variables>

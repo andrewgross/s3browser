@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from s3_browser.list_utilities import (
+from s3browser.list_utilities import (
     sort_files
 )
 from tests.util import get_unsorted_list_of_files

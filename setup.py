@@ -29,6 +29,7 @@ def parse_requirements():
 
     return pkgs, links
 
+
 def local_file(f):
     return open(os.path.join(os.path.dirname(__file__), f)).read()
 
@@ -37,13 +38,13 @@ install_requires, dependency_links = parse_requirements()
 if __name__ == '__main__':
 
     setup(
-        name="s3_browser",
+        name="s3browser",
         version='0.0.1',
-        description="s3_browser",
+        description="s3browser",
         long_description=local_file('README.md'),
         author='Andrew GRoss',
         author_email='andrew.w.gross@gmail.com',
-        url='https://github.com/andrewgross/s3_browser',
+        url='https://github.com/andrewgross/s3browser',
         packages=find_packages(exclude=['*tests*']),
         install_requires=install_requires,
         include_package_data=True,
@@ -54,7 +55,7 @@ if __name__ == '__main__':
         zip_safe=False,
         entry_points={
             'console_scripts': [
-                's3_browser = s3_browser.main:main'
+                's3browser = s3browser.main:main'
             ],
         },
     )
