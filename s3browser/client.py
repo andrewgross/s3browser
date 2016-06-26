@@ -2,13 +2,9 @@
 from __future__ import unicode_literals
 
 import cmd
-import sys
-import functools
 
-from time import sleep
-
-from path_utilities import change_directory
-
+from .path_utilities import change_directory
+from .helpers import print_help, color_yellow
 
 # This makes mocking easier
 get_input = raw_input
@@ -46,19 +42,11 @@ Exit S3Browser""")
 
     do_EOF = do_exit
 
-
     def _update_prompt(self):
         if self.current_directory:
-            self.prompt = '{} $ '.format(print_yellow(self.current_directory))
+            self.prompt = '{} $ '.format(color_yellow(self.current_directory))
         else:
             self.prompt = '$ '
 
-
-    def postcmd(stop, line):
-        _update_prompt()
-
-
-def print_yellow(text):
-    YELLOW = '\033[33m'
-    END = '\033[0m'
-    return '{color}{text}{end}'.format(color=YELLOW, end=END, text=text)
+    def postcmd(self, stop, line):
+        self._update_prompt()
