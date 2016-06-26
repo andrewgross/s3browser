@@ -1,11 +1,21 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
+
+import sys
+
+# This makes mocking easier
+output = sys.stdout
+error = sys.stderr
+
+
+def print_result(*args):
+    print(*args, file=output)  # noqa
 
 
 def print_help(*args):
     GREEN = '\033[32m'
     END = '\033[0m'
-    print('{color}{}{end} '.format(*args, color=GREEN, end=END))  # noqa
+    print('{color}{}{end} '.format(*args, color=GREEN, end=END), file=error)  # noqa
 
 
 def color_yellow(text):

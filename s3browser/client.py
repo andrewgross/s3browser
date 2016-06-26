@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import cmd
 
 from .path_utilities import change_directory
-from .helpers import print_help, color_yellow
+from .helpers import print_help, print_result, color_yellow
 
 # This makes mocking easier
 get_input = raw_input
@@ -29,7 +29,18 @@ class S3Browser(cmd.Cmd, object):
         print_help("""
 cd
 
-Changes the current directory.""")
+Changes the current directory.
+""")
+
+    def do_pwd(self, line):
+        print_result(self.current_directory)
+
+    def help_pwd(self):
+        print_help("""
+pwd
+
+Print the current directory
+""")
 
     def do_exit(self, line):
         return True
@@ -38,9 +49,8 @@ Changes the current directory.""")
         print_help("""
 exit
 
-Exit S3Browser""")
-
-    do_EOF = do_exit
+Exit S3Browser
+""")
 
     def _update_prompt(self):
         if self.current_directory:
@@ -50,3 +60,5 @@ Exit S3Browser""")
 
     def postcmd(self, stop, line):
         self._update_prompt()
+
+    do_EOF = do_exit
