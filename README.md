@@ -1,1 +1,1 @@
-## S3 Browser
+## S3 Browser [![Build Status](https://travis-ci.org/andrewgross/s3browser.svg?branch=master)](https://travis-ci.org/andrewgross/s3browser) [![Coverage Status](https://coveralls.io/repos/github/andrewgross/s3browser/badge.svg?branch=master)](https://coveralls.io/github/andrewgross/s3browser?branch=master)
