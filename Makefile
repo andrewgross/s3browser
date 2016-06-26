@@ -31,7 +31,7 @@ setup: clean
 	fi
 	@if [ -z $$SKIP_DEPS ]; then \
 		echo "Installing dependencies..."; \
-		pip install -r development.txt; \
+		pip install --quiet -r development.txt; \
 	fi
 	@pre-commit install
 
