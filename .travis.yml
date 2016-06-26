@@ -15,6 +15,7 @@ cache:
 
 install:
   - pip install -r development.txt
+  - pip install coveralls
 
 script:
   - make $TEST_TYPE
