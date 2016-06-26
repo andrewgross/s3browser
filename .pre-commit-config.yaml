@@ -1,0 +1,18 @@
+-   repo: git@github.com:pre-commit/pre-commit-hooks
+    sha: 616c1ebd1898c91de9a0548866a59cbd9f4547f6
+    hooks:
+    -   id: trailing-whitespace
+        exclude: \.html$
+    -   id: end-of-file-fixer
+        exclude: \.html$
+    -   id: check-json
+    -   id: check-yaml
+    -   id: debug-statements
+    -   id: requirements-txt-fixer
+    -   id: flake8
+        exclude: \/migrations\/
+-   repo: git@github.com:pre-commit/pre-commit
+    sha: a8e1eaa51249148a40521ec7e816d45f7f5bdee1
+    hooks:
+    -   id: validate_config
+    -   id: validate_manifest

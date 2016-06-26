@@ -1,0 +1,24 @@
+language: python
+
+python:
+  - "2.7"
+
+env:
+  - TEST_TYPE=unit
+  - TEST_TYPE=functional
+
+sudo: false
+
+cache:
+  directories:
+  - $HOME/.cache/pip
+
+install:
+  - pip install -r development.txt
+
+script:
+  - make $TEST_TYPE
+
+branches:
+  only:
+    - master
