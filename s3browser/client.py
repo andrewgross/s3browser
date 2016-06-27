@@ -3,8 +3,10 @@ from __future__ import unicode_literals
 
 import cmd
 
-from path_utilities import change_directory
-from helpers import print_help, print_result, color_yellow
+from .list_utilities import sort_files, get_matches
+from .path_utilities import change_directory
+from .s3_utilities import get_keys
+from .helpers import print_help, print_result, color_yellow
 
 # This makes mocking easier
 get_input = raw_input
@@ -12,24 +14,38 @@ get_input = raw_input
 
 class S3Browser(cmd.Cmd, object):
 
-    def __init__(self, bucket, connection, current_directory=""):
+    def __init__(self, bucket, connection):
         super(S3Browser, self).__init__()
         self.bucket = bucket
         self.connection = connection
-        self.current_directory = current_directory
+        self.current_directory = ""
         self._update_prompt()
+        self.keys = None
 
     def do_cd(self, line):
         self.current_directory = change_directory(line, self.current_directory)
 
     def complete_cd(self, text, line, begidx, endidx):
-        return []
+        matches = get_matches(self.current_directory, self.keys, prefix=text)
+        sorted_files = sort_files(matches)
+        names = map(lambda x: x.name, sorted_files)
+        return names
 
     def help_cd(self):
         print_help("""
 cd
 
 Changes the current directory.
+""")
+
+    def do_refresh(self, line):
+        self.keys = get_keys(self.bucket, interactive=True)
+
+    def help_refresh(self):
+        print_help("""
+refresh
+
+Refreshes list of keys in an S3 Bucket. This can take a while.
 """)
 
     def do_pwd(self, line):

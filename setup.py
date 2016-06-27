@@ -1,6 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import re
 import os
 from setuptools import setup, find_packages
+
+version = ''
+with open('s3browser/__init__.py', 'r') as fd:
+    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+                        fd.read(), re.MULTILINE).group(1)
+
+if not version:
+    raise RuntimeError('Cannot find version information')
 
 
 def parse_requirements():
@@ -39,7 +51,7 @@ if __name__ == '__main__':
 
     setup(
         name="s3browser",
-        version='0.0.1',
+        version=version,
         description="s3browser",
         long_description=local_file('README.md'),
         author='Andrew Gross',

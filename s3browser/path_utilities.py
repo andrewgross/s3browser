@@ -5,6 +5,8 @@ from __future__ import unicode_literals
 def get_path(directory, prefix=None):
     if prefix is None:
         return "{}".format(directory)
+    if not directory:
+        return "{}".format(prefix)
     else:
         return "{}/{}".format(directory, prefix)
 
