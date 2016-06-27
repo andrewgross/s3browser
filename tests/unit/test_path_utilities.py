@@ -59,8 +59,8 @@ def test_change_directory_with_base_no_path():
     # And I have no path
     path = ""
 
-    # Then I stay with a directory
-    change_directory(path, current_directory).should.equal("foo")
+    # Then I go back to the top level
+    change_directory(path, current_directory).should.equal("")
 
 
 def test_change_directory_with_leading_slash_in_path():

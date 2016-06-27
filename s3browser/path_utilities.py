@@ -10,7 +10,9 @@ def get_path(directory, prefix=None):
 
 
 def change_directory(path, current_directory):
-    if path.startswith("/"):
+    if path == "":
+        current_directory = ""
+    elif path.startswith("/"):
         current_directory = _update_directory(path, "")
     else:
         current_directory = _update_directory(path, current_directory)
