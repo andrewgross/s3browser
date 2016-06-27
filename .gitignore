@@ -7,3 +7,4 @@ dist/
 .DS_Store
 .build.log
 build/
+cover/

@@ -35,32 +35,17 @@ setup: clean
 	fi
 	@pre-commit install
 
-
-check_tests:
-	@if [ -d tests/$(suite) ]; then \
-		if [ `find tests/$(suite) -name 'test_*.py' | wc -l` -eq 0 ] ; then \
-			echo "No \033[0;32m$(suite)\033[0m tests..."; \
-		fi \
+run_test:
+	@echo "======================================="
+	@echo "* Running \033[0;32m$(suite)\033[0m test suite *"
+	@echo "======================================="
+	@if [ $(pattern) ]; then \
+		tests=`grep "def test_.*$(pattern).*(" tests/$(suite)/*.py | sed 's/tests\/$(suite)\/\(.*\).py:def test_\(.*\)(.*/tests.$(suite).\1\:test_\2/' | tr '\n' ' '`; \
+		nosetests --stop --rednose --with-coverage --cover-html --cover-erase --cover-package=$(PACKAGE) \
+				--cover-branches --verbosity=$(TESTS_VERBOSITY) -s -x $$tests; \
 	else \
-		echo "No \033[0;32mtest/$(suite)\033[0m directory found"; \
-		exit 1; \
-	fi
-	$(eval HAS_SUITE = $(shell if [ -d tests/$(suite) ] && [ `find tests/$(suite) -name 'test_*.py' | wc -l` -ne 0 ]; then echo "yes"; else echo "no"; fi))
-
-
-run_test: check_tests
-	@if [ "$(HAS_SUITE)" == "yes" ]; then \
-		echo "======================================="; \
-		echo "* Running \033[0;32m$(suite)\033[0m test suite *"; \
-		echo "======================================="; \
-		if [ $(pattern) ]; then \
-			tests=`grep "def test_.*$(pattern).*(" tests/$(suite)/*.py | sed 's/tests\/$(suite)\/\(.*\).py:def test_\(.*\)(.*/tests.$(suite).\1\:test_\2/' | tr '\n' ' '`; \
-			nosetests --stop --rednose --with-coverage --cover-package=$(PACKAGE) \
-					--cover-branches --verbosity=$(TESTS_VERBOSITY) -s -x $$tests; \
-		else \
-			nosetests --stop --rednose --with-coverage --cover-package=$(PACKAGE) \
-					--cover-branches --verbosity=$(TESTS_VERBOSITY) -s tests/$(suite) ; \
-		fi \
+		nosetests --stop --rednose --with-coverage --cover-html --cover-erase --cover-package=$(PACKAGE) \
+				--cover-branches --verbosity=$(TESTS_VERBOSITY) -s tests/$(suite) ; \
 	fi
 clean:
 	@echo "Removing garbage..."
