@@ -5,15 +5,15 @@ from client import S3Browser
 
 
 def main():
-    current_directory = ""
+    browser = None
 
     while True:
         try:
-            browser = S3Browser(None, None, current_directory=current_directory)
+            if not browser:
+                browser = S3Browser(None, None)
             browser.cmdloop()
         except KeyboardInterrupt:
             print("^C")  # noqa
-            current_directory = browser.current_directory
             continue
         break
 
