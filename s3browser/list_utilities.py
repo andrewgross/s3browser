@@ -11,3 +11,7 @@ def get_matches(current_directory, files, prefix=None):
 
 def sort_files(files):
     return sorted(files, key=lambda x: x.name)
+
+
+def get_names(files):
+    return map(lambda x: x.name, files)

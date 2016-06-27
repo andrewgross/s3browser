@@ -21,6 +21,20 @@ def test_get_path_no_prefix():
     get_path(directory, prefix=prefix).should.equal(directory)
 
 
+def test_get_path_no_directory():
+    """
+    Build a path with no directory
+    """
+    # When I have no directory
+    directory = ""
+
+    # And I have a prefix
+    prefix = "foo"
+
+    # Then I don't merge the empty directory
+    get_path(directory, prefix=prefix).should.equal(prefix)
+
+
 def test_get_path_with_prefix():
     """
     Build a path with with a prefix
