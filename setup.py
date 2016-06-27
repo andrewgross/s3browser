@@ -42,7 +42,7 @@ if __name__ == '__main__':
         version='0.0.1',
         description="s3browser",
         long_description=local_file('README.md'),
-        author='Andrew GRoss',
+        author='Andrew Gross',
         author_email='andrew.w.gross@gmail.com',
         url='https://github.com/andrewgross/s3browser',
         packages=find_packages(exclude=['*tests*']),

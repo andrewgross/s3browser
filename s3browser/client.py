@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 
 import cmd
 
-from .path_utilities import change_directory
-from .helpers import print_help, print_result, color_yellow
+from path_utilities import change_directory
+from helpers import print_help, print_result, color_yellow
 
 # This makes mocking easier
 get_input = raw_input
@@ -60,5 +60,6 @@ Exit S3Browser
 
     def postcmd(self, stop, line):
         self._update_prompt()
+        return stop
 
     do_EOF = do_exit
