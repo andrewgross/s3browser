@@ -52,7 +52,6 @@ clean:
 	@echo "Removing garbage..."
 	@find . -name '*.pyc' -delete
 	@rm -rf .coverage *.egg-info *.log build dist MANIFEST cover
-	@pip uninstall s3browser
 
 tag:
 	@if [ $$(git rev-list $$(git describe --abbrev=0 --tags)..HEAD --count) -gt 0 ]; then \
