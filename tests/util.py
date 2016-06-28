@@ -3,10 +3,12 @@ from __future__ import unicode_literals
 
 import datetime
 
+now = datetime.datetime.now()
+
 
 class S3File(object):
 
-    def __init__(self, name, last_modified):
+    def __init__(self, name, last_modified=now):
         self.name = name
         self.last_modified = last_modified
 

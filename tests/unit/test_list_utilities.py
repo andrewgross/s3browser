@@ -4,9 +4,10 @@ from __future__ import unicode_literals
 from s3browser.list_utilities import (
     sort_files,
     get_names,
-    get_matches
+    get_matches,
+    get_sub_directory_names,
 )
-from tests.util import get_unsorted_list_of_files
+from tests.util import get_unsorted_list_of_files, S3File
 
 
 def test_sort_files():
@@ -49,3 +50,23 @@ def test_get_matches():
 
     # Then I have just that match
     map(lambda x: x.name, matches).should.equal(["a"])
+
+
+def test_get_directories():
+    """
+    Filter a list of files to directories in the current directory.
+    """
+    # When I have a file of nested directories
+    a = S3File("foo/bar/a")
+    b = S3File("foo/b")
+    c = S3File("c")
+    files = [a, b, c]
+
+    # And I have a current directory
+    current_directory = "foo"
+
+    # When I get sub directories of my current directory
+    result = get_sub_directory_names(current_directory, files)
+
+    # Then I only get the sub directories
+    result.should.equal(["bar"])

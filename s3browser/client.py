@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import cmd
 
-from .list_utilities import sort_files, get_matches, get_names
+from .list_utilities import sort_files, get_matches, get_sub_directory_names
 from .path_utilities import change_directory
 from .s3_utilities import get_keys
 from .helpers import print_help, print_result, color_yellow
@@ -26,7 +26,15 @@ class S3Browser(cmd.Cmd, object):
         self.current_directory = change_directory(line, self.current_directory)
 
     def complete_cd(self, text, line, begidx, endidx):
-        return get_names(sort_files(get_matches(self.current_directory, self.keys, prefix=text)))
+        return get_sub_directory_names(
+            self.current_directory,
+            sort_files(
+                get_matches(
+                    self.current_directory,
+                    self.keys, prefix=text
+                )
+            )
+        )
 
     def help_cd(self):
         print_help("""
