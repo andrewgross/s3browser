@@ -35,3 +35,27 @@ def _is_valid_directory(filename, path):
         if "/" in remaining_string:
             return True
     return False
+
+
+def get_sub_file_names(current_directory, files):
+    sub_files = []
+    for f in files:
+        filename = f.name
+        if _is_valid_file(filename, current_directory):
+            remaining_string = filename[len(current_directory):]
+            if remaining_string.startswith("/"):
+                remaining_string = remaining_string[1:]
+            if not remaining_string:
+                continue
+            sub_files.append(remaining_string)
+    return sub_files
+
+
+def _is_valid_file(filename, path):
+    if filename.startswith(path):
+        remaining_string = filename[len(path):]
+        if remaining_string.startswith("/"):
+            remaining_string = remaining_string[1:]
+        if "/" in remaining_string or not remaining_string:
+            return False
+    return True

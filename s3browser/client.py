@@ -2,8 +2,9 @@
 from __future__ import unicode_literals
 
 import cmd
+import traceback
 
-from .list_utilities import sort_files, get_matches, get_sub_directory_names
+from .list_utilities import sort_files, get_matches, get_sub_directory_names, get_sub_file_names
 from .path_utilities import change_directory
 from .s3_utilities import get_keys
 from .helpers import print_help, print_result, color_yellow
@@ -51,6 +52,30 @@ Changes the current directory.
 refresh
 
 Refreshes list of keys in an S3 Bucket. This can take a while.
+""")
+
+    def do_ls(self, line):
+        merged = []
+        try:
+            files = get_sub_file_names(
+                self.current_directory,
+                get_matches(self.current_directory, self.keys)
+            )
+            directories = get_sub_directory_names(
+                self.current_directory,
+                get_matches(self.current_directory, self.keys)
+            )
+            merged.extend(files)
+            merged.extend(directories)
+            print_result(merged)
+        except:
+            print traceback.format_exc()
+
+    def help_ls(self):
+        print_help("""
+ls
+
+Lists files in the current directory
 """)
 
     def do_pwd(self, line):
