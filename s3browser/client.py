@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 import cmd
-import traceback
 
 from .list_utilities import sort_files, get_matches, get_sub_directory_names, get_sub_file_names
 from .path_utilities import change_directory
@@ -56,20 +55,18 @@ Refreshes list of keys in an S3 Bucket. This can take a while.
 
     def do_ls(self, line):
         merged = []
-        try:
-            files = get_sub_file_names(
-                self.current_directory,
-                get_matches(self.current_directory, self.keys)
-            )
-            directories = get_sub_directory_names(
-                self.current_directory,
-                get_matches(self.current_directory, self.keys)
-            )
-            merged.extend(files)
-            merged.extend(directories)
-            print_result(merged)
-        except:
-            print traceback.format_exc()
+        files = get_sub_file_names(
+            self.current_directory,
+            get_matches(self.current_directory, self.keys)
+        )
+        directories = list(set(get_sub_directory_names(
+            self.current_directory,
+            get_matches(self.current_directory, self.keys)
+        )))
+        merged.extend(files)
+        merged.extend(directories)
+        for item in sorted(merged):
+            print_result(item)
 
     def help_ls(self):
         print_help("""
