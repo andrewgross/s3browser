@@ -73,6 +73,26 @@ def test_get_directories():
     result.should.equal(["bar"])
 
 
+def test_get_directories_with_trailing_slash():
+    """
+    Filter a list of files to directories in the current directory.
+    """
+    # When I have a file of nested directories
+    a = S3File("foo/bar/a")
+    b = S3File("foo/b")
+    c = S3File("c")
+    files = [a, b, c]
+
+    # And I have a current directory
+    current_directory = "foo/"
+
+    # When I get sub directories of my current directory
+    result = get_sub_directory_names(current_directory, files)
+
+    # Then I only get the sub directories
+    result.should.equal(["bar"])
+
+
 def test_get_files():
     """
     Filter a list of files to files in the current directory.

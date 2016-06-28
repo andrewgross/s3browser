@@ -77,6 +77,20 @@ def test_change_directory_with_base_no_path():
     change_directory(path, current_directory).should.equal("")
 
 
+def test_change_directory_with_tilde():
+    """
+    Change Directory with a current directory and tilde
+    """
+    # When I have a directory
+    current_directory = "foo"
+
+    # And I have a tilde for a path
+    path = "~"
+
+    # Then I go back to the top level
+    change_directory(path, current_directory).should.equal("")
+
+
 def test_change_directory_with_leading_slash_in_path():
     """
     Change Directory with a current directory and a leading slash in the path
