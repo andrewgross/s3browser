@@ -59,3 +59,18 @@ def _is_valid_file(filename, path):
         if "/" in remaining_string or not remaining_string:
             return False
     return True
+
+
+def list_files(current_directory, keys):
+        merged = []
+        files = get_sub_file_names(
+            current_directory,
+            get_matches(current_directory, keys)
+        )
+        directories = list(set(get_sub_directory_names(
+            current_directory,
+            get_matches(current_directory, keys)
+        )))
+        merged.extend(files)
+        merged.extend(directories)
+        return sorted(merged)

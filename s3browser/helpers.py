@@ -22,3 +22,9 @@ def color_yellow(text):
     YELLOW = '\033[33m'
     END = '\033[0m'
     return '{color}{text}{end}'.format(color=YELLOW, end=END, text=text)
+
+
+def color_green(text):
+    GREEN = '\033[32m'
+    END = '\033[0m'
+    return '{color}{text}{end}'.format(color=GREEN, end=END, text=text)

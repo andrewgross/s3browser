@@ -3,10 +3,10 @@ from __future__ import unicode_literals
 
 import cmd
 
-from .list_utilities import sort_files, get_matches, get_sub_directory_names, get_sub_file_names
+from .list_utilities import sort_files, get_matches, get_sub_directory_names, list_files
 from .path_utilities import change_directory
 from .s3_utilities import get_keys
-from .helpers import print_help, print_result, color_yellow
+from .helpers import print_help, print_result, color_yellow, color_green
 
 # This makes mocking easier
 get_input = raw_input
@@ -54,18 +54,7 @@ Refreshes list of keys in an S3 Bucket. This can take a while.
 """)
 
     def do_ls(self, line):
-        merged = []
-        files = get_sub_file_names(
-            self.current_directory,
-            get_matches(self.current_directory, self.keys)
-        )
-        directories = list(set(get_sub_directory_names(
-            self.current_directory,
-            get_matches(self.current_directory, self.keys)
-        )))
-        merged.extend(files)
-        merged.extend(directories)
-        for item in sorted(merged):
+        for item in list_files(self.current_directory, self.keys):
             print_result(item)
 
     def help_ls(self):
@@ -97,9 +86,9 @@ Exit S3Browser
 
     def _update_prompt(self):
         if self.current_directory:
-            self.prompt = '{} $ '.format(color_yellow(self.current_directory))
+            self.prompt = '{}:{} $ '.format(color_green(self.bucket.name), color_yellow(self.current_directory))
         else:
-            self.prompt = '$ '
+            self.prompt = '{}:{} $ '.format(color_green(self.bucket.name), color_yellow("~"))
 
     def postcmd(self, stop, line):
         self._update_prompt()
