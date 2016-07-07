@@ -14,12 +14,11 @@ def fileno(file_or_fd):
 
 
 @contextmanager
-def silence_stderr(to=os.devnull, stderr=None):
+def silence_stderr(to=os.devnull):
     """
     http://stackoverflow.com/questions/4675728/redirect-stdout-to-a-file-in-python/22434262#22434262
     """
-    if stderr is None:
-        stderr = sys.stderr
+    stderr = sys.stderr
 
     stderr_fd = fileno(stderr)
     # copy stderr_fd before it is overwritten
