@@ -24,6 +24,12 @@ def color_yellow(text):
     return '{color}{text}{end}'.format(color=YELLOW, end=END, text=text)
 
 
+def color_blue(text):
+    BLUE = '\033[34m'
+    END = '\033[0m'
+    return '{color}{text}{end}'.format(color=BLUE, end=END, text=text)
+
+
 def color_green(text):
     GREEN = '\033[32m'
     END = '\033[0m'

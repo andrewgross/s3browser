@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import cmd
 
-from .list_utilities import sort_files, get_matches, get_sub_directory_names, list_files
+from .list_utilities import sort_files, get_matches, get_sub_directory_names, parse_ls, print_files
 from .path_utilities import change_directory
 from .s3_utilities import get_keys
 from .helpers import print_help, print_result, color_yellow, color_green
@@ -54,8 +54,11 @@ Refreshes list of keys in an S3 Bucket. This can take a while.
 """)
 
     def do_ls(self, line):
-        for item in list_files(self.current_directory, self.keys):
-            print_result(item)
+        args = parse_ls(line)
+        if args is None:
+            return
+        matching_files = get_matches(self.current_directory, self.keys)
+        print_files(self.current_directory, matching_files, args)
 
     def help_ls(self):
         print_help("""
