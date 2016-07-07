@@ -1,44 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from argparse import ArgumentParser
-
 from client import S3Browser
 from .s3_utilities import get_connection, get_bucket
+from .parsers import main_parser
 from . import __version__
 
 
 def main():
-    parser = ArgumentParser(prog="s3browser", description="Run S3Browser for the given bucket")
-
-    parser.add_argument(
-        "bucket",
-        metavar="BUCKET",
-        type=str,
-        help='Queues to process',
-        action="store",
-    )
-
-    parser.add_argument(
-        "--access-key-id",
-        dest="access_key_id",
-        type=str,
-        default=None,
-        help='AWS_ACCESS_KEY_ID used by Boto',
-        action="store",
-        required=False
-    )
-
-    parser.add_argument(
-        "--secret-access-key",
-        dest="secret_access_key",
-        type=str,
-        default=None,
-        help='AWS_SECRET_ACCESS_KEY used by Boto',
-        action="store",
-        required=False
-    )
-
+    parser = main_parser()
     args = parser.parse_args()
 
     _main(args.bucket,

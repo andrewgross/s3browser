@@ -7,6 +7,7 @@ from s3browser.list_utilities import (
     get_matches,
     get_sub_directory_names,
     get_sub_file_names,
+    list_files,
 )
 from tests.util import get_unsorted_list_of_files, S3File
 
@@ -168,3 +169,24 @@ def test_get_files_with_matching_subdirectories():
 
     # Then I only get the sub files not directories
     result.should.equal(["bo"])
+
+
+def test_list_files():
+    """
+    Get a list of all files in a current directory
+    """
+    # When I have a current directory
+    current_directory = "foo"
+
+    # And I have a list of files and directories
+    a = S3File("foo/b/")
+    b = S3File("foo/bo")
+    c = S3File("foo/bar/baz")
+    d = S3File("notfoo/notbar/notbaz")
+    files = [a, b, c, d]
+
+    # When I get a list of files
+    result = list_files(current_directory, files)
+
+    # Then I only get the items in my current directory
+    result.should.equal(["b", "bar", "bo"])

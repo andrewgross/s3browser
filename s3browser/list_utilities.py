@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from .path_utilities import get_path
+from .parsers import ls_parser
 
 
 def get_matches(current_directory, files, prefix=None):
@@ -62,15 +63,24 @@ def _is_valid_file(filename, path):
 
 
 def list_files(current_directory, keys):
-        merged = []
-        files = get_sub_file_names(
-            current_directory,
-            get_matches(current_directory, keys)
-        )
-        directories = list(set(get_sub_directory_names(
-            current_directory,
-            get_matches(current_directory, keys)
-        )))
-        merged.extend(files)
-        merged.extend(directories)
-        return sorted(merged)
+    merged = []
+    files = get_sub_file_names(
+        current_directory,
+        get_matches(current_directory, keys)
+    )
+    directories = list(set(get_sub_directory_names(
+        current_directory,
+        get_matches(current_directory, keys)
+    )))
+    merged.extend(files)
+    merged.extend(directories)
+    return sorted(merged)
+
+
+def parse_ls(line):
+    parser = ls_parser()
+    try:
+        args = parser.parse_args(line.split(" "))
+    except SystemExit:
+        args = None
+    return args
