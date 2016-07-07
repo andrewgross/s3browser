@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from s3browser.path_utilities import (
     change_directory,
     get_path,
+    get_relative_name,
 )
 
 
@@ -201,3 +202,87 @@ def test_change_directory_with_path_with_double_dot_in_it():
 
     # Then I stay in my current directory
     change_directory(path, current_directory).should.equal("foo/bar/bat")
+
+
+def test_get_relative_name():
+    """
+    Get Relative Filenames with no current directory and a file
+    """
+    # When I have a file
+    filename = "foo.txt"
+
+    # And I have no current directory
+    current_directory = ""
+
+    # Then I get the filename
+    get_relative_name(current_directory, filename).should.equal("foo.txt")
+
+
+def test_get_relative_name_with_nested_name():
+    """
+    Get Relative Filename with a current directory and nested files
+    """
+    # When I have a file with nested structure
+    filename = "top_level/foo.txt"
+
+    # And I have a current directory
+    current_directory = "top_level"
+
+    # Then I get the relative filename
+    get_relative_name(current_directory, filename).should.equal("foo.txt")
+
+
+def test_get_relative_name_with_nested_directory_name():
+    """
+    Get Relative Filename with a current directory and nested directories
+    """
+    # When I have a file with nested structure
+    filename = "top_level/middle_level/foo.txt"
+
+    # And I have a current directory
+    current_directory = "top_level"
+
+    # Then I get the relative directory name
+    get_relative_name(current_directory, filename).should.equal("middle_level")
+
+
+def test_get_relative_name_with_deeply_nested_file_name():
+    """
+    Get Relative Filename with a current directory and deeply nested filename
+    """
+    # When I have a file with nested structure
+    filename = "top_level/middle_level/foo.txt"
+
+    # And I have a nested current directory
+    current_directory = "top_level/middle_level"
+
+    # Then I get the relative filename
+    get_relative_name(current_directory, filename).should.equal("foo.txt")
+
+
+def test_get_relative_name_with_adjacent_slashes_in_filename():
+    """
+    Get Relative Filename with a current directory and a filename with adjacent slashes
+    """
+    # When I have a file with nested structure
+    filename = "top_level/middle_level//foo.txt"
+
+    # And I have a nested current directory
+    current_directory = "top_level/middle_level"
+
+    # Then I get the relative filename
+    get_relative_name(current_directory, filename).should.equal("foo.txt")
+
+
+def test_get_relative_name_with_mismatched_directory():
+    """
+    Get Relative Filename with a current directory that does not match filename
+    """
+    # When I have a file with nested structure
+    filename = "top_level/foo.txt"
+
+    # And I have a current directory that does not match
+    current_directory = "something_bad"
+
+    # Then I get back None
+    get_relative_name(current_directory, filename).should.equal(None)

@@ -32,3 +32,18 @@ def _update_directory(path, directory):
             continue
         parsed_dir.append(p)
     return "/".join(parsed_dir)
+
+
+def get_relative_name(current_directory, filename):
+    if filename.startswith(current_directory):
+        relative_filename = _trim_leading_slash(filename[len(current_directory):])
+        return relative_filename.split("/")[0]
+    else:
+        return None
+
+
+def _trim_leading_slash(filename):
+    if filename.startswith("/") and len(filename) > 1:
+        return _trim_leading_slash(filename[1:])
+    else:
+        return filename
