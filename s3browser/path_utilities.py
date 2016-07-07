@@ -42,6 +42,22 @@ def get_relative_name(current_directory, filename):
         return None
 
 
+def is_relative_file(current_directory, filename):
+    if filename.startswith(current_directory):
+        relative_filename = _trim_leading_slash(filename[len(current_directory):])
+        if relative_filename and "/" not in relative_filename:
+            return True
+    return False
+
+
+def is_relative_directory(current_directory, filename):
+    if filename.startswith(current_directory):
+        relative_filename = _trim_leading_slash(filename[len(current_directory):])
+        if "/" in relative_filename:
+            return True
+    return False
+
+
 def _trim_leading_slash(filename):
     if filename.startswith("/") and len(filename) > 1:
         return _trim_leading_slash(filename[1:])

@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from .path_utilities import get_path, get_relative_name
+from .path_utilities import (
+    get_path,
+    get_relative_name,
+    is_relative_file,
+    is_relative_directory
+)
 from .parsers import ls_parser
 
 
@@ -19,47 +24,13 @@ def get_names(files):
 
 
 def get_sub_directory_names(current_directory, files):
-    directories = []
-    for f in files:
-        if _is_valid_directory(f.name, current_directory):
-            remaining_string = f.name[len(current_directory):]
-            if remaining_string.startswith("/"):
-                remaining_string = remaining_string[1:]
-            if "/" in remaining_string:
-                directories.append(remaining_string.split("/")[0])
-    return directories
-
-
-def _is_valid_directory(filename, path):
-    if filename.startswith(path):
-        remaining_string = filename[len(path):]
-        if "/" in remaining_string:
-            return True
-    return False
+    relative_dirs = filter(lambda x: is_relative_directory(current_directory, x.name), files)
+    return map(lambda x: get_relative_name(current_directory, x.name), relative_dirs)
 
 
 def get_sub_file_names(current_directory, files):
-    sub_files = []
-    for f in files:
-        filename = f.name
-        if _is_valid_file(filename, current_directory):
-            remaining_string = filename[len(current_directory):]
-            if remaining_string.startswith("/"):
-                remaining_string = remaining_string[1:]
-            if not remaining_string:
-                continue
-            sub_files.append(remaining_string)
-    return sub_files
-
-
-def _is_valid_file(filename, path):
-    if filename.startswith(path):
-        remaining_string = filename[len(path):]
-        if remaining_string.startswith("/"):
-            remaining_string = remaining_string[1:]
-        if "/" in remaining_string or not remaining_string:
-            return False
-    return True
+    relative_files = filter(lambda x: is_relative_file(current_directory, x.name), files)
+    return map(lambda x: get_relative_name(current_directory, x.name), relative_files)
 
 
 def list_files(current_directory, keys):
