@@ -15,8 +15,8 @@ def get_matches(current_directory, files, prefix=None):
     return filter(lambda x: x.name.startswith(path), files)
 
 
-def sort_files(files):
-    return sorted(files, key=lambda x: x.name)
+def sort_files(files, key="name"):
+    return sorted(files, key=lambda x: getattr(x, key))
 
 
 def get_names(files):
@@ -33,9 +33,8 @@ def get_sub_file_names(current_directory, files):
     return map(lambda x: get_relative_name(current_directory, x.name), relative_files)
 
 
-def list_files(current_directory, keys):
-    files = sort_files(get_matches(current_directory, keys))
-    return map(lambda x: get_relative_name(current_directory, x.name), files)
+def get_files(current_directory, keys):
+    return sort_files(get_matches(current_directory, keys))
 
 
 def parse_ls(line):

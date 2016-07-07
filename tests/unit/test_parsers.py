@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from s3browser.list_utilities import parse_ls
 from s3browser.parsers import main_parser
+from s3browser.decorators import silence_stderr
 
 
 def test_parse_ls():
@@ -118,17 +119,32 @@ def test_parse_ls_multiple():
     Test parsing ls command with multiple flags
     """
     # When I have an ls command
-    command = "-lhtrs"
+    command = "-lhtr"
 
     # And I parse it
     parsed = parse_ls(command)
 
     # Then I get a parsed command with multiple flags set
     parsed.reverse.should.be.true
-    parsed.size.should.be.true
+    parsed.size.should.be.false
     parsed.human.should.be.true
     parsed.time.should.be.true
     parsed.long.should.be.true
+
+
+def test_parse_ls_exclusive():
+    """
+    Test parsing ls command with mutually exclusive flags
+    """
+    # When I have an ls command with exclusive flags
+    command = "-ts"
+
+    # And I parse it
+    with silence_stderr():
+        parsed = parse_ls(command)
+
+    # Then I get back nothing
+    parsed.should.be.none
 
 
 def test_parse_ls_expression():
@@ -158,7 +174,8 @@ def test_parse_ls_bad_args():
     command = "-laGh"
 
     # And I parse it
-    parsed = parse_ls(command)
+    with silence_stderr():
+        parsed = parse_ls(command)
 
     # Then I get back nothing
     parsed.should.be.none

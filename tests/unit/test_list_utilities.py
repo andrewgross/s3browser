@@ -7,7 +7,7 @@ from s3browser.list_utilities import (
     get_matches,
     get_sub_directory_names,
     get_sub_file_names,
-    list_files,
+    get_files,
 )
 from tests.util import get_unsorted_list_of_files, S3File
 
@@ -94,9 +94,9 @@ def test_get_directories_with_trailing_slash():
     result.should.equal(["bar"])
 
 
-def test_get_files():
+def test_get_filenames():
     """
-    Filter a list of files to files in the current directory.
+    Filter a list of files to filenames in the current directory.
     """
     # When I have a file of nested directories
     a = S3File("foo/bar/a")
@@ -171,9 +171,9 @@ def test_get_files_with_matching_subdirectories():
     result.should.equal(["bo"])
 
 
-def test_list_files():
+def test_get_files():
     """
-    Get a list of all files in a current directory
+    Get a list of all files and sub directories in a current directory
     """
     # When I have a current directory
     current_directory = "foo"
@@ -186,7 +186,7 @@ def test_list_files():
     files = [a, b, c, d]
 
     # When I get a list of files
-    result = list_files(current_directory, files)
+    result = get_files(current_directory, files)
 
     # Then I only get the items in my current directory
-    result.should.equal(["b", "bar", "bo"])
+    result.should.equal([a, c, b])

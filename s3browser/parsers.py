@@ -76,7 +76,9 @@ def ls_parser():
         required=False
     )
 
-    parser.add_argument(
+    sorting = parser.add_mutually_exclusive_group()
+
+    sorting.add_argument(
         "-s",
         dest="size",
         default=False,
@@ -85,7 +87,7 @@ def ls_parser():
         required=False
     )
 
-    parser.add_argument(
+    sorting.add_argument(
         "-t",
         dest="time",
         default=False,
