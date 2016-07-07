@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from .path_utilities import get_path
+from .path_utilities import get_path, get_relative_name
 from .parsers import ls_parser
 
 
@@ -63,18 +63,8 @@ def _is_valid_file(filename, path):
 
 
 def list_files(current_directory, keys):
-    merged = []
-    files = get_sub_file_names(
-        current_directory,
-        get_matches(current_directory, keys)
-    )
-    directories = list(set(get_sub_directory_names(
-        current_directory,
-        get_matches(current_directory, keys)
-    )))
-    merged.extend(files)
-    merged.extend(directories)
-    return sorted(merged)
+    files = sort_files(get_matches(current_directory, keys))
+    return map(lambda x: get_relative_name(current_directory, x.name), files)
 
 
 def parse_ls(line):
