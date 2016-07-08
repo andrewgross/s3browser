@@ -7,30 +7,29 @@ import sys
 output = sys.stdout
 error = sys.stderr
 
+# Pretty Colors
+WHITE = '\033[37m'
+YELLOW = '\033[33m'
+BLUE = '\033[34m'
+GREEN = '\033[32m'
+END = '\033[0m'
+
 
 def print_result(*args):
     print(*args, file=output)  # noqa
 
 
 def print_help(*args):
-    GREEN = '\033[32m'
-    END = '\033[0m'
-    print('{color}{}{end} '.format(*args, color=GREEN, end=END), file=error)  # noqa
+    print('{color}{}{end} '.format(*args, color=WHITE, end=END), file=error)  # noqa
 
 
 def color_yellow(text):
-    YELLOW = '\033[33m'
-    END = '\033[0m'
     return '{color}{text}{end}'.format(color=YELLOW, end=END, text=text)
 
 
 def color_blue(text):
-    BLUE = '\033[34m'
-    END = '\033[0m'
     return '{color}{text}{end}'.format(color=BLUE, end=END, text=text)
 
 
 def color_green(text):
-    GREEN = '\033[32m'
-    END = '\033[0m'
     return '{color}{text}{end}'.format(color=GREEN, end=END, text=text)

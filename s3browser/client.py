@@ -7,6 +7,7 @@ from .list_utilities import sort_files, get_matches, get_sub_directory_names, pa
 from .path_utilities import change_directory
 from .s3_utilities import get_keys
 from .helpers import print_help, print_result, color_yellow, color_green
+from .parsers import ls_parser
 
 # This makes mocking easier
 get_input = raw_input
@@ -37,8 +38,7 @@ class S3Browser(cmd.Cmd, object):
         )
 
     def help_cd(self):
-        print_help("""
-cd
+        print_help("""usage: cd [dir]
 
 Changes the current directory.
 """)
@@ -47,8 +47,7 @@ Changes the current directory.
         self.keys = get_keys(self.bucket, interactive=True)
 
     def help_refresh(self):
-        print_help("""
-refresh
+        print_help("""usage: refresh
 
 Refreshes list of keys in an S3 Bucket. This can take a while.
 """)
@@ -61,18 +60,14 @@ Refreshes list of keys in an S3 Bucket. This can take a while.
         print_files(self.current_directory, matching_files, args)
 
     def help_ls(self):
-        print_help("""
-ls
-
-Lists files in the current directory
-""")
+        parser = ls_parser()
+        parser.print_help()
 
     def do_pwd(self, line):
         print_result(self.current_directory)
 
     def help_pwd(self):
-        print_help("""
-pwd
+        print_help("""usage: pwd
 
 Print the current directory
 """)
@@ -81,8 +76,7 @@ Print the current directory
         return True
 
     def help_exit(self):
-        print_help("""
-exit
+        print_help("""usage: exit
 
 Exit S3Browser
 """)
