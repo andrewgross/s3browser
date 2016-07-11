@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from s3browser.list_utilities import parse_ls
-from s3browser.parsers import main_parser
-from s3browser.decorators import silence_stderr
+from s3browser.util.list import parse_ls
+from s3browser.util.parsers import main_parser
+from s3browser.util.decorators import silence_stderr
 
 
 def test_parse_ls():

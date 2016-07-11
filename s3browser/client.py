@@ -3,11 +3,12 @@ from __future__ import unicode_literals
 
 import cmd
 
-from .list_utilities import sort_files, get_matches, get_sub_directory_names, parse_ls, print_files
-from .path_utilities import change_directory
-from .s3_utilities import get_keys
+from .util.list import sort_files, get_matches, get_sub_directory_names, parse_ls, print_files
+from .util.path import change_directory
+from .util.parsers import ls_parser
+from .util.s3 import get_keys
 from .helpers import print_help, print_result, color_yellow, color_green
-from .parsers import ls_parser
+
 
 # This makes mocking easier
 get_input = raw_input

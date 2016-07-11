@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 
 from client import S3Browser
-from .s3_utilities import get_connection, get_bucket
-from .parsers import main_parser
+from .util.s3 import get_connection, get_bucket
+from .util.parsers import main_parser
 from . import __version__
 
 

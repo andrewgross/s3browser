@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from s3browser.list_utilities import (
+from s3browser.util.list import (
     sort_files,
     get_names,
     get_matches,

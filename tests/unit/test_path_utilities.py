@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from s3browser.path_utilities import (
+from s3browser.util.path import (
     change_directory,
     get_path,
     get_relative_name,

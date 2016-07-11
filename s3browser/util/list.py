@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from .path_utilities import (
+from s3browser.util.path import (
     get_path,
     get_relative_name,
     is_relative_file,
     is_relative_directory
 )
-from .parsers import ls_parser
-from .helpers import color_blue
+from s3browser.util.parsers import ls_parser
+from s3browser.helpers import color_blue
 
 
 def get_matches(current_directory, files, prefix=None):
