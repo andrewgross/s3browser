@@ -127,5 +127,30 @@ def test_ls_l(output):
 
     # Then I get the current files and directories
     expected = [call(3, "2016-07-11 03:39", "bar"), call(3, "2016-07-11 03:39", "foo")]
-    print output.call_args_list
+    assert output.call_args_list == expected
+
+
+@mock_s3
+@freeze_time("2016-07-11 03:39:34")
+@patch('s3browser.util.list.print_result')
+def test_ls_lh(output):
+    """
+    ls -lh should show human readable size
+    """
+    # When I have a client
+    keys = ["foo", "bar"]
+    bucket, conn = populate_bucket('mybucket', keys)
+    c = S3Browser(bucket, conn)
+
+    # And I have no current directory
+    current_directory = ""
+    c.current_directory = current_directory
+    with silence_stdout():
+        c.do_refresh("")
+
+    # When I call ls
+    c.do_ls("-lh")
+
+    # Then I get the current files and directories
+    expected = [call("3B", "2016-07-11 03:39", "bar"), call("3B", "2016-07-11 03:39", "foo")]
     assert output.call_args_list == expected

@@ -53,10 +53,12 @@ def print_files(current_directory, files, ls_args):
             is_dir = is_relative_directory(current_directory, f.name)
             if is_dir:
                 name = color_blue(name)
-            last_modified = f.last_modified
-            formatted_date = _format_date(last_modified)
-            size = f.size
-            print_result(size, formatted_date, name)
+            last_modified = _format_date(f.last_modified)
+            if ls_args.human:
+                size = _format_size(f.size)
+            else:
+                size = f.size
+            print_result(size, last_modified, name)
     else:
         for f in sorted_files:
             name = get_relative_name(current_directory, f.name)
@@ -82,3 +84,17 @@ def _format_date(date):
     """
     dt = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.000Z")
     return dt.strftime("%Y-%m-%d %H:%M")
+
+
+def _format_size(size):
+    billion = 1024 * 1024 * 1024
+    million = 1024 * 1024
+    thousand = 1024
+    if size >= billion:
+        return "{}G".format(size / billion)
+    elif size >= million:
+        return "{}M".format(size / million)
+    elif size >= thousand:
+        return "{}K".format(size / thousand)
+    else:
+        return "{}B".format(size)
