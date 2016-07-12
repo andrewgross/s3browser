@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
+
 from s3browser.util.path import (
     get_path,
     get_relative_name,
@@ -8,7 +10,7 @@ from s3browser.util.path import (
     is_relative_directory
 )
 from s3browser.util.parsers import ls_parser
-from s3browser.helpers import color_blue
+from s3browser.helpers import color_blue, print_result
 
 
 def get_matches(current_directory, files, prefix=None):
@@ -52,15 +54,16 @@ def print_files(current_directory, files, ls_args):
             if is_dir:
                 name = color_blue(name)
             last_modified = f.last_modified
+            formatted_date = _format_date(last_modified)
             size = f.size
-            print size, last_modified, name
+            print_result(size, formatted_date, name)
     else:
         for f in sorted_files:
             name = get_relative_name(current_directory, f.name)
             is_dir = is_relative_directory(current_directory, f.name)
             if is_dir:
                 name = color_blue(name)
-            print name
+            print_result(name)
 
 
 def _sorted_files(files, ls_args):
@@ -71,3 +74,11 @@ def _sorted_files(files, ls_args):
     else:
         sorted_files = sort_files(files, reverse=ls_args.reverse)
     return sorted_files
+
+
+def _format_date(date):
+    """
+    Converts a python datetime string to a string
+    """
+    dt = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.000Z")
+    return dt.strftime("%Y-%m-%d %H:%M")

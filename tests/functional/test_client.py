@@ -2,9 +2,13 @@
 from __future__ import unicode_literals
 
 from s3browser.client import S3Browser
+from s3browser.helpers import color_blue
+from s3browser.util.decorators import silence_stdout
 
-from mock import patch
+from freezegun import freeze_time
+from mock import patch, call
 from moto import mock_s3
+
 from tests.util import populate_bucket
 
 
@@ -21,7 +25,8 @@ def test_refresh():
     c = S3Browser(bucket, conn)
 
     # When I refresh
-    c.do_refresh("")
+    with silence_stdout():
+        c.do_refresh("")
 
     # Then I get all of my keys
     set(map(lambda x: x.name, c.keys)).should.equal(set(keys))
@@ -34,7 +39,7 @@ def test_pwd(output):
     pwd should show the current directory
     """
     # When I have a client
-    keys = ['foo', 'bar']
+    keys = []
     bucket, conn = populate_bucket('mybucket', keys)
     c = S3Browser(bucket, conn)
 
@@ -47,3 +52,80 @@ def test_pwd(output):
 
     # Then I get the current directory
     output.assert_called_once_with(current_directory)
+
+
+@mock_s3
+@patch('s3browser.util.list.print_result')
+def test_ls(output):
+    """
+    ls should show the current files
+    """
+    # When I have a client
+    keys = ["foo", "bar"]
+    bucket, conn = populate_bucket('mybucket', keys)
+    c = S3Browser(bucket, conn)
+
+    # And I have no current directory
+    current_directory = ""
+    c.current_directory = current_directory
+    with silence_stdout():
+        c.do_refresh("")
+
+    # When I call ls
+    c.do_ls("")
+
+    # Then I get the current files
+    expected = [call("bar"), call("foo")]
+    assert output.call_args_list == expected
+
+
+@mock_s3
+@patch('s3browser.util.list.print_result')
+def test_ls_directory(output):
+    """
+    ls should show directories
+    """
+    # When I have a client
+    keys = ["baz", "foo/bar"]
+    bucket, conn = populate_bucket('mybucket', keys)
+    c = S3Browser(bucket, conn)
+
+    # And I have no current directory
+    current_directory = ""
+    c.current_directory = current_directory
+    with silence_stdout():
+        c.do_refresh("")
+
+    # When I call ls
+    c.do_ls("")
+
+    # Then I get the current files and directories
+    expected = [call("baz"), call(color_blue("foo"))]
+    assert output.call_args_list == expected
+
+
+@mock_s3
+@freeze_time("2016-07-11 03:39:34")
+@patch('s3browser.util.list.print_result')
+def test_ls_l(output):
+    """
+    ls -l should show size and last modified time
+    """
+    # When I have a client
+    keys = ["foo", "bar"]
+    bucket, conn = populate_bucket('mybucket', keys)
+    c = S3Browser(bucket, conn)
+
+    # And I have no current directory
+    current_directory = ""
+    c.current_directory = current_directory
+    with silence_stdout():
+        c.do_refresh("")
+
+    # When I call ls
+    c.do_ls("-l")
+
+    # Then I get the current files and directories
+    expected = [call(3, "2016-07-11 03:39", "bar"), call(3, "2016-07-11 03:39", "foo")]
+    print output.call_args_list
+    assert output.call_args_list == expected

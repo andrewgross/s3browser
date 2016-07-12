@@ -11,9 +11,10 @@ now = datetime.datetime.now()
 
 class S3File(object):
 
-    def __init__(self, name, last_modified=now):
+    def __init__(self, name, last_modified=now, size=1):
         self.name = name
         self.last_modified = last_modified
+        self.size = size
 
 
 def get_unsorted_list_of_files(prefix=None):
