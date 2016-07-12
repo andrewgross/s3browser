@@ -152,5 +152,5 @@ def test_ls_lh(output):
     c.do_ls("-lh")
 
     # Then I get the current files and directories
-    expected = [call("3B", "2016-07-11 03:39", "bar"), call("3B", "2016-07-11 03:39", "foo")]
+    expected = [call("   3B", "2016-07-11 03:39", "bar"), call("   3B", "2016-07-11 03:39", "foo")]
     assert output.call_args_list == expected

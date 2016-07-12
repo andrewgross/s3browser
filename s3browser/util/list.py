@@ -91,10 +91,10 @@ def _format_size(size):
     million = 1024 * 1024
     thousand = 1024
     if size >= billion:
-        return "{}G".format(size / billion)
+        return "{:>4}G".format(size / billion)
     elif size >= million:
-        return "{}M".format(size / million)
+        return "{:>4}M".format(size / million)
     elif size >= thousand:
-        return "{}K".format(size / thousand)
+        return "{:>4}K".format(size / thousand)
     else:
-        return "{}B".format(size)
+        return "{:>4}B".format(size)
