@@ -71,9 +71,10 @@ def _check_time(now, timer):
 
 class S3File(object):
 
-    def __init__(self, name, size, last_modified):
+    def __init__(self, name, size, last_modified, parent=None):
         self.name = name
         self._size = size
+        self.parent = parent
         if isinstance(last_modified, datetime.datetime):
             self._last_modified = last_modified
         else:
@@ -88,8 +89,9 @@ class S3File(object):
 
 class S3Dir(object):
 
-    def __init__(self, name):
+    def __init__(self, name, parent=None):
         self.name = name
+        self.parent = parent
         self.files = []
         self.dirs = []
         self._size = 0
@@ -102,6 +104,7 @@ class S3Dir(object):
             self.dirs.append(child)
         else:
             raise "Attempted to add a bad child"
+        child.parent = self
 
     def get_size(self):
         if not self._size:
@@ -116,3 +119,26 @@ class S3Dir(object):
                 if f.get_last_modified() > self._last_modified:
                     self._last_modified = f.get_last_modified()
         return self._last_modified
+
+
+def add_key(node, key, partial_name):
+    split_name = partial_name.split("/")
+    if len(split_name) == 1 and split_name != "":
+        f = S3File(partial_name, key.size, key.last_modified)
+        node.add_child(f)
+    else:
+        dir_name = split_name[0]
+        new_dir = S3Dir(dir_name)
+        new_name = partial_name[len(dir_name) + 1:]
+        for d in node.dirs:
+            if d.name == dir_name:
+                return add_key(d, key, new_name)
+        node.add_child(new_dir)
+        add_key(new_dir, key, new_name)
+
+
+def build_tree(bucket_name, keys):
+    base_node = S3Dir(bucket_name)
+    for key in keys:
+        add_key(base_node, key, key.name)
+    return base_node

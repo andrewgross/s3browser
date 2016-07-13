@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 import datetime
 from freezegun import freeze_time
 
-from s3browser.util.s3 import S3File, S3Dir
+from s3browser.util.s3 import S3File, S3Dir, add_key
+from tests.util import S3File as BotoKey
 
 
 def test_s3_file_get_size():
@@ -137,3 +138,39 @@ def test_s3_dir_last_modified():
     # Then it shows the lastest time of its children
     last_modified_1.should.equal(new)
     last_modified_2.should.equal(old)
+
+
+def test_add_node():
+    """
+    add_node should add an S3File to a node if it is a file
+    """
+    # When I have a node
+    node = S3Dir("")
+
+    # And I have a boto key
+    key = BotoKey("foo")
+
+    # When I add the key to the node
+    add_key(node, key, key.name)
+
+    # Then It adds an S3File
+    node.files[0].name.should.equal("foo")
+
+
+def test_add_node_nested():
+    """
+    add_node should add nested nodes if given nested keys
+    """
+    # When I have a node
+    node = S3Dir("")
+
+    # And I have a boto key
+    key = BotoKey("top/middle/foo")
+
+    # When I add the key to the node
+    add_key(node, key, key.name)
+
+    # Then It adds the appropriate nodes
+    node.dirs[0].name.should.equal("top")
+    node.dirs[0].dirs[0].name.should.equal("middle")
+    node.dirs[0].dirs[0].files[0].name.should.equal("foo")
