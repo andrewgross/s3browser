@@ -48,18 +48,24 @@ def parse_ls(line):
 def print_files(current_directory, files, ls_args):
     sorted_files = _sorted_files(files, ls_args)
     collapsed_files, filenames = _collapsed_files(sorted_files, current_directory)
-    for filename in filenames:
-        name = get_relative_name(current_directory, filename)
-        is_dir = _is_dir(current_directory, filename, collapsed_files)
-        if is_dir:
-            name = color_blue(name)
-        last_modified = _format_date(_get_date(filename, collapsed_files))
-        size = _get_size(filename, collapsed_files)
+    for f in sorted_files:
+        name = get_relative_name(current_directory, f.name)
+        is_dir = _is_dir(current_directory, name, collapsed_files)
+
+        last_modified = _format_date(_get_date(name, collapsed_files))
+        size = _get_size(name, collapsed_files)
         size = _format_size(size, human=ls_args.human)
-        if ls_args.long:
-            print_result(size, last_modified, name)
+        if name not in filenames:
+            continue
+        if is_dir:
+            _name = color_blue(name)
         else:
-            print_result(name)
+            _name = name
+        if ls_args.long:
+            print_result(size, last_modified, _name)
+        else:
+            print_result(_name)
+        filenames.remove(name)
 
 
 def _is_dir(current_directory, filename, collapsed_files):

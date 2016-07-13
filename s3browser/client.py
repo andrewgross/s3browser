@@ -60,6 +60,9 @@ Refreshes list of keys in an S3 Bucket. This can take a while.
         matching_files = get_matches(self.current_directory, self.keys)
         print_files(self.current_directory, matching_files, args)
 
+    def do_ll(self, line):
+        self.do_ls("-l -h {}".format(line))
+
     def help_ls(self):
         parser = ls_parser()
         parser.print_help()

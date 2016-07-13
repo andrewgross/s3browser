@@ -183,3 +183,29 @@ def test_ls_l_size(output):
         call("              4B", "2016-07-11 03:39", "foo2")
     ]
     assert output.call_args_list == expected
+
+
+@mock_s3
+@freeze_time("2016-07-11 03:39:34")
+@patch('s3browser.util.list.print_result')
+def test_ls_nested(output):
+    """
+    ls should work with a current directory.
+    """
+    # When I have a client
+    keys = ["foo/foo/bar/baz", "foo/bar2", "foo/baz2/baz3", "banana"]
+    bucket, conn = populate_bucket('mybucket', keys)
+    c = S3Browser(bucket, conn)
+    with silence_stdout():
+        c.do_refresh("")
+
+    # And I have a current directory
+    current_directory = "foo"
+    c.current_directory = current_directory
+
+    # When I call ls
+    c.do_ls("")
+
+    # Then I get the current files and directories
+    expected = [call("bar2"), call(color_blue("baz2")), call(color_blue("foo"))]
+    assert output.call_args_list == expected
