@@ -55,8 +55,7 @@ def print_files(current_directory, files, ls_args):
             name = color_blue(name)
         last_modified = _format_date(_get_date(filename, collapsed_files))
         size = _get_size(filename, collapsed_files)
-        if ls_args.human:
-            size = _format_size(size)
+        size = _format_size(size, human=ls_args.human)
         if ls_args.long:
             print_result(size, last_modified, name)
         else:
@@ -120,7 +119,9 @@ def _get_size(filename, collapsed_files):
     return total_size
 
 
-def _format_size(size):
+def _format_size(size, human=False):
+    if not human:
+        return "{:>15}B".format(size)
     billion = 1024 * 1024 * 1024
     million = 1024 * 1024
     thousand = 1024

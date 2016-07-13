@@ -126,7 +126,7 @@ def test_ls_l(output):
     c.do_ls("-l")
 
     # Then I get the current files and directories
-    expected = [call(3, "2016-07-11 03:39", "bar"), call(3, "2016-07-11 03:39", "foo")]
+    expected = [call("              3B", "2016-07-11 03:39", "bar"), call("              3B", "2016-07-11 03:39", "foo")]
     assert output.call_args_list == expected
 
 
@@ -178,5 +178,8 @@ def test_ls_l_size(output):
     c.do_ls("-l")
 
     # Then I get the current files and directories
-    expected = [call(14, "2016-07-11 03:39", color_blue("foo")), call(4, "2016-07-11 03:39", "foo2")]
+    expected = [
+        call("             14B", "2016-07-11 03:39", color_blue("foo")),
+        call("              4B", "2016-07-11 03:39", "foo2")
+    ]
     assert output.call_args_list == expected
