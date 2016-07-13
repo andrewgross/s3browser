@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 import sys
 import datetime
 
+from s3browser.helpers import convert_date
+
 from boto.s3.connection import S3Connection
 
 
@@ -65,3 +67,52 @@ def _print_progress_bar(counter):
 
 def _check_time(now, timer):
     return (now - timer) > datetime.timedelta(seconds=1)
+
+
+class S3File(object):
+
+    def __init__(self, name, size, last_modified):
+        self.name = name
+        self._size = size
+        if isinstance(last_modified, datetime.datetime):
+            self._last_modified = last_modified
+        else:
+            self._last_modified = convert_date(last_modified)
+
+    def get_size(self):
+        return self._size
+
+    def get_last_modified(self):
+        return self._last_modified
+
+
+class S3Dir(object):
+
+    def __init__(self, name):
+        self.name = name
+        self.files = []
+        self.dirs = []
+        self._size = 0
+        self._last_modified = None
+
+    def add_child(self, child):
+        if isinstance(child, S3File):
+            self.files.append(child)
+        elif isinstance(child, S3Dir):
+            self.dirs.append(child)
+        else:
+            raise "Attempted to add a bad child"
+
+    def get_size(self):
+        if not self._size:
+            for f in self.files + self.dirs:
+                self._size = self._size + f.get_size()
+        return self._size
+
+    def get_last_modified(self):
+        if not self._last_modified:
+            self._last_modified = datetime.datetime.min
+            for f in self.files + self.dirs:
+                if f.get_last_modified() > self._last_modified:
+                    self._last_modified = f.get_last_modified()
+        return self._last_modified

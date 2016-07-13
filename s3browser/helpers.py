@@ -2,6 +2,7 @@
 from __future__ import unicode_literals, print_function
 
 import sys
+import datetime
 
 # This makes mocking easier
 output = sys.stdout
@@ -33,3 +34,7 @@ def color_blue(text):
 
 def color_green(text):
     return '{color}{text}{end}'.format(color=GREEN, end=END, text=text)
+
+
+def convert_date(date):
+    return datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ")
