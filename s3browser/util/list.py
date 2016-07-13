@@ -55,7 +55,7 @@ def print_files(current_directory, files, ls_args):
         last_modified = _format_date(_get_date(name, collapsed_files))
         size = _get_size(name, collapsed_files)
         size = _format_size(size, human=ls_args.human)
-        if name not in filenames:
+        if name not in filenames or not name:
             continue
         if is_dir:
             _name = color_blue(name)
