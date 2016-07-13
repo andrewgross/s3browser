@@ -154,3 +154,29 @@ def test_ls_lh(output):
     # Then I get the current files and directories
     expected = [call("   3B", "2016-07-11 03:39", "bar"), call("   3B", "2016-07-11 03:39", "foo")]
     assert output.call_args_list == expected
+
+
+@mock_s3
+@freeze_time("2016-07-11 03:39:34")
+@patch('s3browser.util.list.print_result')
+def test_ls_l_size(output):
+    """
+    ls -l should sum directory contents sizes and not duplicate entries
+    """
+    # When I have a client
+    keys = ["foo/bar", "foo/baz", "foo2"]
+    bucket, conn = populate_bucket('mybucket', keys)
+    c = S3Browser(bucket, conn)
+
+    # And I have no current directory
+    current_directory = ""
+    c.current_directory = current_directory
+    with silence_stdout():
+        c.do_refresh("")
+
+    # When I call ls
+    c.do_ls("-l")
+
+    # Then I get the current files and directories
+    expected = [call(14, "2016-07-11 03:39", color_blue("foo")), call(4, "2016-07-11 03:39", "foo2")]
+    assert output.call_args_list == expected

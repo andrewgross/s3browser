@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
+from freezegun import freeze_time
+
 from s3browser.util.list import (
     sort_files,
     get_names,
     get_matches,
     get_sub_directory_names,
     get_sub_file_names,
+    _get_date,
+    _get_size,
 )
 from tests.util import get_unsorted_list_of_files, S3File
 
@@ -168,3 +173,51 @@ def test_get_files_with_matching_subdirectories():
 
     # Then I only get the sub files not directories
     result.should.equal(["bo"])
+
+
+@freeze_time("2016-07-11 03:39:34")
+def test_get_last_modified():
+    """
+    Given a filename, get the latest modification timestamp for all sub files
+    """
+    # When I have a filename
+    filename = "foo"
+
+    # And I have a set of files
+    def _format(date):
+        return date.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+    old = datetime.datetime.now() - datetime.timedelta(hours=1)
+    new = datetime.datetime.now()
+    old_file = S3File("foo/old", last_modified=_format(old))
+    new_file = S3File("foo/new", last_modified=_format(new))
+    collapsed_files = {
+        "foo": [old_file, new_file]
+    }
+
+    # When I get the latest modified date
+    last_modified = _get_date(filename, collapsed_files)
+
+    # Then I get the new date
+    last_modified.should.equal(new)
+
+
+def test_get_size():
+    """
+    Given a filename, get the total size for all sub files
+    """
+    # When I have a filename
+    filename = "foo"
+
+    # And I have a set of files
+    old_file = S3File("foo/old", size=1)
+    new_file = S3File("foo/new", size=2)
+    collapsed_files = {
+        "foo": [old_file, new_file]
+    }
+
+    # When I get the size
+    size = _get_size(filename, collapsed_files)
+
+    # Then I get the total size
+    size.should.equal(3)

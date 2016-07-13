@@ -47,25 +47,44 @@ def parse_ls(line):
 
 def print_files(current_directory, files, ls_args):
     sorted_files = _sorted_files(files, ls_args)
-    if ls_args.long:
-        for f in sorted_files:
-            name = get_relative_name(current_directory, f.name)
-            is_dir = is_relative_directory(current_directory, f.name)
-            if is_dir:
-                name = color_blue(name)
-            last_modified = _format_date(f.last_modified)
-            if ls_args.human:
-                size = _format_size(f.size)
-            else:
-                size = f.size
+    collapsed_files, filenames = _collapsed_files(sorted_files, current_directory)
+    for filename in filenames:
+        name = get_relative_name(current_directory, filename)
+        is_dir = _is_dir(current_directory, filename, collapsed_files)
+        if is_dir:
+            name = color_blue(name)
+        last_modified = _format_date(_get_date(filename, collapsed_files))
+        size = _get_size(filename, collapsed_files)
+        if ls_args.human:
+            size = _format_size(size)
+        if ls_args.long:
             print_result(size, last_modified, name)
-    else:
-        for f in sorted_files:
-            name = get_relative_name(current_directory, f.name)
-            is_dir = is_relative_directory(current_directory, f.name)
-            if is_dir:
-                name = color_blue(name)
+        else:
             print_result(name)
+
+
+def _is_dir(current_directory, filename, collapsed_files):
+    files = collapsed_files.get(filename, [])
+    for f in files:
+        if is_relative_directory(current_directory, f.name):
+            return True
+    return False
+
+
+def _collapsed_files(files, current_directory):
+    f_set = set()
+    filenames = []
+    grouped_files = {}
+    for f in files:
+        name = get_relative_name(current_directory, f.name)
+        if name not in f_set:
+            filenames.append(name)
+            f_set.add(name)
+        if grouped_files.get(name):
+            grouped_files[name].append(f)
+        else:
+            grouped_files[name] = [f]
+    return grouped_files, filenames
 
 
 def _sorted_files(files, ls_args):
@@ -80,10 +99,25 @@ def _sorted_files(files, ls_args):
 
 def _format_date(date):
     """
-    Converts a python datetime string to a string
+    Converts a python datetime to a string
     """
-    dt = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.000Z")
-    return dt.strftime("%Y-%m-%d %H:%M")
+    return date.strftime("%Y-%m-%d %H:%M")
+
+
+def _get_date(filename, collapsed_files):
+    last_modified = datetime.datetime.min
+    for f in collapsed_files[filename]:
+        dt = datetime.datetime.strptime(f.last_modified, "%Y-%m-%dT%H:%M:%S.%fZ")
+        if dt > last_modified:
+            last_modified = dt
+    return last_modified
+
+
+def _get_size(filename, collapsed_files):
+    total_size = 0
+    for f in collapsed_files[filename]:
+        total_size = total_size + f.size
+    return total_size
 
 
 def _format_size(size):
