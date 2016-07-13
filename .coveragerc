@@ -4,6 +4,8 @@ exclude_lines =
     if __name__ == .__main__.:
     raise NotImplemented.
     def __repr__
+omit =
+    */decorators.py
 
 [run]
 include = s3browser/*
