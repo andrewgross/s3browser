@@ -174,3 +174,68 @@ def test_add_node_nested():
     node.dirs[0].name.should.equal("top")
     node.dirs[0].dirs[0].name.should.equal("middle")
     node.dirs[0].dirs[0].files[0].name.should.equal("foo")
+
+
+def test_add_directory():
+    """
+    add_node should add directories without sub files
+    """
+    # When I have a node
+    node = S3Dir("")
+
+    # And I have a boto key
+    key = BotoKey("top/aa/")
+    key2 = BotoKey("top/zz")
+
+    # When I add the key to the node
+    add_key(node, key, key.name)
+    add_key(node, key2, key2.name)
+
+    # Then It adds the appropriate nodes
+    node.dirs[0].name.should.equal("top")
+    node.dirs[0].dirs[0].name.should.equal("aa")
+    node.dirs[0].files[0].name.should.equal("zz")
+
+
+def test_add_multiple_files_to_directory():
+    """
+    add_node should add directories with multiple sub files
+    """
+    # When I have a node
+    node = S3Dir("")
+
+    # And I have a boto key
+    key = BotoKey("middle/aa")
+    key2 = BotoKey("middle/zz")
+
+    # When I add the key to the node
+    add_key(node, key, key.name)
+    add_key(node, key2, key2.name)
+
+    # Then It adds the appropriate nodes
+    node.dirs[0].name.should.equal("middle")
+    node.dirs[0].files[0].name.should.equal("aa")
+    node.dirs[0].files[1].name.should.equal("zz")
+
+
+def test_add_directory_with_multiple_sub_directories():
+    """
+    add_node should add directories with multiple sub directories
+    """
+    # When I have a node
+    node = S3Dir("")
+
+    # And I have a boto key
+    key = BotoKey("top/top/aa")
+    key2 = BotoKey("top/bottom/zz")
+
+    # When I add the key to the node
+    add_key(node, key, key.name)
+    add_key(node, key2, key2.name)
+
+    # Then It adds the appropriate nodes
+    node.dirs[0].name.should.equal("top")
+    node.dirs[0].dirs[0].name.should.equal("top")
+    node.dirs[0].dirs[1].name.should.equal("bottom")
+    node.dirs[0].dirs[0].files[0].name.should.equal("aa")
+    node.dirs[0].dirs[1].files[0].name.should.equal("zz")
