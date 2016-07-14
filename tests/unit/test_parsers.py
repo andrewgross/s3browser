@@ -47,7 +47,7 @@ def test_parse_ls_s():
     Test parsing ls command with size
     """
     # When I have an ls command
-    command = "-s"
+    command = "-S"
 
     # And I parse it
     parsed = parse_ls(command)
@@ -137,7 +137,7 @@ def test_parse_ls_exclusive():
     Test parsing ls command with mutually exclusive flags
     """
     # When I have an ls command with exclusive flags
-    command = "-ts"
+    command = "-tS"
 
     # And I parse it
     with silence_stderr():

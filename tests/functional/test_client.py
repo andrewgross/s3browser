@@ -175,7 +175,7 @@ def test_ls_lhsr(output):
         c.do_refresh("")
 
     # When I call ls
-    c.do_ls("-lhsr")
+    c.do_ls("-lhSr")
 
     # Then I get the current files and directories
     expected = [

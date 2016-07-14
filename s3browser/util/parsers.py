@@ -79,7 +79,7 @@ def ls_parser():
     sorting = parser.add_mutually_exclusive_group()
 
     sorting.add_argument(
-        "-s",
+        "-S",
         dest="size",
         default=False,
         help='Sort by File Size',
