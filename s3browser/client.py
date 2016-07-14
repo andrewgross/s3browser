@@ -6,7 +6,8 @@ import cmd
 from .util.list import parse_ls, print_files, complete_dir
 from .util.path import change_directory, get_pwd
 from .util.parsers import ls_parser
-from .util.s3 import get_keys, build_tree
+from .util.s3 import get_keys
+from .util.tree import build_tree
 from .helpers import print_help, print_result, color_green
 
 

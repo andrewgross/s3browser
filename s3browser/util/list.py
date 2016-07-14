@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from s3browser.util.parsers import ls_parser
-from s3browser.util.s3 import S3Dir
+from s3browser.util.tree import S3Dir
 from s3browser.helpers import color_blue, print_result
 
 

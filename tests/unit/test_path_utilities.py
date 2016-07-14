@@ -6,7 +6,7 @@ from s3browser.util.path import (
     get_pwd,
 )
 
-from s3browser.util.s3 import S3Dir
+from s3browser.util.tree import S3Dir
 
 
 def test_change_directory_no_base_no_path():
