@@ -159,6 +159,67 @@ def test_ls_lh(output):
 @mock_s3
 @freeze_time("2016-07-11 03:39:34")
 @patch('s3browser.util.list.print_result')
+def test_ls_lhsr(output):
+    """
+    ls -lhsr should sort by size, reversed
+    """
+    # When I have a client
+    keys = ["fooz", "bar"]
+    bucket, conn = populate_bucket('mybucket', keys)
+    c = S3Browser(bucket, conn)
+
+    # And I have no current directory
+    current_directory = ""
+    c.current_directory = current_directory
+    with silence_stdout():
+        c.do_refresh("")
+
+    # When I call ls
+    c.do_ls("-lhsr")
+
+    # Then I get the current files and directories
+    expected = [
+        call("   4B", "2016-07-11 03:39", "fooz"),
+        call("   3B", "2016-07-11 03:39", "bar"),
+    ]
+    assert output.call_args_list == expected
+
+
+@mock_s3
+@patch('s3browser.util.list.print_result')
+def test_ls_lht(output):
+    """
+    ls -lht should sort by last modified, reversed
+    """
+    # When I have a client
+    with freeze_time("2016-07-11 03:39:34"):
+        keys = ["new"]
+        bucket, conn = populate_bucket('mybucket', keys)
+    with freeze_time("2016-07-10 03:39:34"):
+        keys = ["old"]
+        bucket, conn = populate_bucket('mybucket', keys)
+    c = S3Browser(bucket, conn)
+
+    # And I have no current directory
+    current_directory = ""
+    c.current_directory = current_directory
+    with silence_stdout():
+        c.do_refresh("")
+
+    # When I call ls
+    c.do_ls("-lht")
+
+    # Then I get the current files and directories
+    expected = [
+        call("   3B", "2016-07-11 03:39", "new"),
+        call("   3B", "2016-07-10 03:39", "old"),
+    ]
+    assert output.call_args_list == expected
+
+
+@mock_s3
+@freeze_time("2016-07-11 03:39:34")
+@patch('s3browser.util.list.print_result')
 def test_ls_l_size(output):
     """
     ls -l should sum directory contents sizes and not duplicate entries

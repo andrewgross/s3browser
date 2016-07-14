@@ -8,7 +8,9 @@ from s3browser.helpers import color_blue, print_result
 
 def sort_files(files, key="name", reverse=False):
     if key == "last_modified":
-        return sorted(files, key=lambda x: x.get_last_modified(), reverse=reverse)
+        # The default time behavior in bash is most recent on top, so we must
+        # use not(reverse) by default
+        return sorted(files, key=lambda x: x.get_last_modified(), reverse=not(reverse))
     elif key == "size":
         return sorted(files, key=lambda x: x.get_size(), reverse=reverse)
     else:
