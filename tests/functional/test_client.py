@@ -29,7 +29,7 @@ def test_refresh():
         c.do_refresh("")
 
     # Then I get all of my keys
-    set(map(lambda x: x.name, c.keys)).should.equal(set(keys))
+    len(c.current_directory.files).should.equal(2)
 
 
 @mock_s3
@@ -39,19 +39,19 @@ def test_pwd(output):
     pwd should show the current directory
     """
     # When I have a client
-    keys = []
+    keys = ["foo", "bar"]
     bucket, conn = populate_bucket('mybucket', keys)
     c = S3Browser(bucket, conn)
 
-    # And I have a current directory
-    current_directory = "foo/bar/baz"
-    c.current_directory = current_directory
+    # And I have files
+    with silence_stdout():
+        c.do_refresh("")
 
     # When I call pwd
     c.do_pwd("")
 
-    # Then I get the current directory
-    output.assert_called_once_with(current_directory)
+    # Then I get the top level bucket name
+    output.assert_called_once_with("mybucket")
 
 
 @mock_s3
@@ -200,8 +200,7 @@ def test_ls_nested(output):
         c.do_refresh("")
 
     # And I have a current directory
-    current_directory = "foo"
-    c.current_directory = current_directory
+    c.do_cd("foo")
 
     # When I call ls
     c.do_ls("")
