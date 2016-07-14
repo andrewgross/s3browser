@@ -23,6 +23,11 @@ def parse_ls(line):
     return args
 
 
+def complete_dir(current_directory, prefix):
+    dirs = sort_files(current_directory.dirs)
+    return [d.name for d in dirs if d.name.startswith(prefix)]
+
+
 def print_files(current_directory, ls_args):
     files = current_directory.dirs + current_directory.files
     sorted_files = _sorted_files(files, ls_args)

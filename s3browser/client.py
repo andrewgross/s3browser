@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import cmd
 
-from .util.list import parse_ls, print_files
+from .util.list import parse_ls, print_files, complete_dir
 from .util.path import change_directory, get_pwd
 from .util.parsers import ls_parser
 from .util.s3 import get_keys, build_tree
@@ -32,7 +32,7 @@ class S3Browser(cmd.Cmd, object):
             print_result("No such directory")
 
     def complete_cd(self, text, line, begidx, endidx):
-        return None
+        return complete_dir(self.current_directory, text)
 
     def help_cd(self):
         print_help("""usage: cd [dir]
