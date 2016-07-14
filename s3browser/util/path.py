@@ -17,13 +17,15 @@ def get_root_node(node):
 def change_directory(path, current_node):
     if path in ["", "~", "/"]:
         return get_root_node(current_node)
+    if path.startswith("/"):
+        path = path[1:]
+        current_node = get_root_node(current_node)
     for p in path.split("/"):
         if p == ".":
             continue
         elif p == "..":
             if current_node.parent:
                 current_node = current_node.parent
-            continue
         else:
             child = _get_matching_dir(p, current_node)
             if child is None:
