@@ -86,6 +86,9 @@ class S3File(object):
     def get_last_modified(self):
         return self._last_modified
 
+    def __repr__(self):
+        return "{} - Size: {}  Last Modified: {}".format(self.name, self._size, self._last_modified)
+
 
 class S3Dir(object):
 
@@ -120,10 +123,15 @@ class S3Dir(object):
                     self._last_modified = f.get_last_modified()
         return self._last_modified
 
+    def __repr__(self):
+        return "{} - Files: {} Dirs: {}".format(self.name, len(self.files), len(self.dirs))
+
 
 def add_key(node, key, partial_name):
     split_name = partial_name.split("/")
-    if len(split_name) == 1 and split_name != "":
+    if partial_name == "":
+        return
+    elif len(split_name) == 1 and split_name != "":
         f = S3File(partial_name, key.size, key.last_modified)
         node.add_child(f)
     else:

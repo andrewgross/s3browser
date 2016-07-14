@@ -1,21 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import datetime
-
-from s3browser.util.path import (
-    get_path,
-    get_relative_name,
-    is_relative_file,
-    is_relative_directory
-)
 from s3browser.util.parsers import ls_parser
+from s3browser.util.s3 import S3Dir
 from s3browser.helpers import color_blue, print_result
-
-
-def get_matches(current_directory, files, prefix=None):
-    path = get_path(current_directory, prefix=prefix)
-    return filter(lambda x: x.name.startswith(path), files)
 
 
 def sort_files(files, key="name", reverse=False):
@@ -24,16 +12,6 @@ def sort_files(files, key="name", reverse=False):
 
 def get_names(files):
     return map(lambda x: x.name, files)
-
-
-def get_sub_directory_names(current_directory, files):
-    relative_dirs = filter(lambda x: is_relative_directory(current_directory, x.name), files)
-    return map(lambda x: get_relative_name(current_directory, x.name), relative_dirs)
-
-
-def get_sub_file_names(current_directory, files):
-    relative_files = filter(lambda x: is_relative_file(current_directory, x.name), files)
-    return map(lambda x: get_relative_name(current_directory, x.name), relative_files)
 
 
 def parse_ls(line):
@@ -45,51 +23,26 @@ def parse_ls(line):
     return args
 
 
-def print_files(current_directory, files, ls_args):
+def print_files(current_directory, ls_args):
+    files = current_directory.dirs + current_directory.files
     sorted_files = _sorted_files(files, ls_args)
-    collapsed_files, filenames = _collapsed_files(sorted_files, current_directory)
     for f in sorted_files:
-        name = get_relative_name(current_directory, f.name)
-        is_dir = _is_dir(current_directory, name, collapsed_files)
-
-        last_modified = _format_date(_get_date(name, collapsed_files))
-        size = _get_size(name, collapsed_files)
-        size = _format_size(size, human=ls_args.human)
-        if name not in filenames or not name:
-            continue
+        name = f.name
+        last_modified = _format_date(f.get_last_modified())
+        size = _format_size(f.get_size(), human=ls_args.human)
+        is_dir = _is_dir(f)
         if is_dir:
-            _name = color_blue(name)
-        else:
-            _name = name
+            name = color_blue(name)
         if ls_args.long:
-            print_result(size, last_modified, _name)
+            print_result(size, last_modified, name)
         else:
-            print_result(_name)
-        filenames.remove(name)
+            print_result(name)
 
 
-def _is_dir(current_directory, filename, collapsed_files):
-    files = collapsed_files.get(filename, [])
-    for f in files:
-        if is_relative_directory(current_directory, f.name):
-            return True
+def _is_dir(file):
+    if isinstance(file, S3Dir):
+        return True
     return False
-
-
-def _collapsed_files(files, current_directory):
-    f_set = set()
-    filenames = []
-    grouped_files = {}
-    for f in files:
-        name = get_relative_name(current_directory, f.name)
-        if name not in f_set:
-            filenames.append(name)
-            f_set.add(name)
-        if grouped_files.get(name):
-            grouped_files[name].append(f)
-        else:
-            grouped_files[name] = [f]
-    return grouped_files, filenames
 
 
 def _sorted_files(files, ls_args):
@@ -107,22 +60,6 @@ def _format_date(date):
     Converts a python datetime to a string
     """
     return date.strftime("%Y-%m-%d %H:%M")
-
-
-def _get_date(filename, collapsed_files):
-    last_modified = datetime.datetime.min
-    for f in collapsed_files[filename]:
-        dt = datetime.datetime.strptime(f.last_modified, "%Y-%m-%dT%H:%M:%S.%fZ")
-        if dt > last_modified:
-            last_modified = dt
-    return last_modified
-
-
-def _get_size(filename, collapsed_files):
-    total_size = 0
-    for f in collapsed_files[filename]:
-        total_size = total_size + f.size
-    return total_size
 
 
 def _format_size(size, human=False):
