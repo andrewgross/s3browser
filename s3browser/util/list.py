@@ -7,7 +7,12 @@ from s3browser.helpers import color_blue, print_result
 
 
 def sort_files(files, key="name", reverse=False):
-    return sorted(files, key=lambda x: getattr(x, key), reverse=reverse)
+    if key == "last_modified":
+        return sorted(files, key=lambda x: x.get_last_modified(), reverse=reverse)
+    elif key == "size":
+        return sorted(files, key=lambda x: x.get_size(), reverse=reverse)
+    else:
+        return sorted(files, key=lambda x: getattr(x, key), reverse=reverse)
 
 
 def get_names(files):
