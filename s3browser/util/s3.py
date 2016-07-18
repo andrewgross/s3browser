@@ -25,14 +25,12 @@ def get_keys(bucket, interactive=False):
     """
     Get all keys, interactive adds some fancy graphics
     """
-    all_keys = []
     counter, timer = _interactive(interactive=interactive)
     for key in bucket:
-        all_keys.append(key)
+        yield key
         counter, timer = _interactive(counter=counter, timer=timer, interactive=interactive)
     if interactive:
         print "\nDone!"
-    return all_keys
 
 
 def _interactive(counter=0, timer=None, interactive=False):
