@@ -20,8 +20,8 @@ class S3Browser(cmd.Cmd, object):
     def __init__(self, connection):
         super(S3Browser, self).__init__()
         self.connection = connection
-        self.current_directory = None
         self._top = S3("")
+        self.current_directory = self._top
         self._get_all_buckets()
         self._update_prompt()
 
@@ -59,11 +59,26 @@ Lists all known buckets or switches the current bucket to <bucket_name>
         return [b.name for b in buckets if b.name.startswith(text)]
 
     def do_refresh(self, line):
-        bucket = self._top.get_child(line)
-        if bucket is None:
-            print "{} is not a valid bucket name!".format(line)
-        tree = build_tree(bucket, get_keys(get_bucket(bucket.name, self.connection), interactive=True))
-        self.current_directory = tree
+        if line == "":
+            print "Refreshing all buckets! Get a snickers."
+            for bucket in self._top.dirs:
+                print "Refreshing {}".format(bucket.name)
+                self._refresh_bucket(bucket)
+        else:
+            bucket = self._top.get_child(line)
+            if bucket is None:
+                print "{} is not a valid bucket name!".format(line)
+            self._refresh_bucket(bucket)
+            self.current_directory = bucket
+
+    def _refresh_bucket(self, bucket):
+        build_tree(bucket, get_keys(get_bucket(bucket.name, self.connection), interactive=True))
+        bucket.refreshed = True
+        return bucket
+
+    def complete_refresh(self, text, line, begidx, endidx):
+        buckets = sorted(self._top.dirs)
+        return [b.name for b in buckets if b.name.startswith(text)]
 
     def help_refresh(self):
         print_help("""usage: refresh

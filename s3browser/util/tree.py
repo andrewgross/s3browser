@@ -110,19 +110,37 @@ class S3(object):
 
     def __init__(self, name):
         self.name = name
-        self.buckets = []
+        self.dirs = []
+        self.files = []
+        self.size = 0
+        self.parent = None
+        self._last_modified = None
 
     def add_child(self, child):
         if isinstance(child, S3Bucket):
-            self.buckets.append(child)
+            self.dirs.append(child)
         else:
             raise "Attempted to add a bad child"
         child.parent = self
 
     def get_child(self, name):
-        for bucket in self.buckets:
+        for bucket in self.dirs:
             if bucket.name == name:
                 return bucket
+
+    def get_size(self):
+        if not self._size:
+            for f in self.files + self.dirs:
+                self._size = self._size + f.get_size()
+        return self._size
+
+    def get_last_modified(self):
+        if not self._last_modified:
+            self._last_modified = datetime.datetime.min
+            for f in self.files + self.dirs:
+                if f.get_last_modified() > self._last_modified:
+                    self._last_modified = f.get_last_modified()
+        return self._last_modified
 
     def __repr__(self):
         return "Top Level of S3"
