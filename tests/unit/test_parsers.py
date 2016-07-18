@@ -189,12 +189,11 @@ def test_main_parser():
     parser = main_parser()
 
     # And I have a command
-    command = "my_bucket --access-key-id foo --secret-access-key bar"
+    command = "--access-key-id foo --secret-access-key bar"
 
     # And I parse it
     parsed = parser.parse_args(command.split(" "))
 
     # Then I get my arguments
-    parsed.bucket = "my_bucket"
     parsed.access_key_id = "foo"
     parsed.secret_access_key = "bar"

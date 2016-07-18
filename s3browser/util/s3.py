@@ -15,6 +15,12 @@ def get_bucket(bucket, connection):
     return connection.get_bucket(bucket)
 
 
+def get_buckets(connection):
+    buckets = connection.get_all_buckets()
+    all_buckets = [b for b in buckets]
+    return all_buckets
+
+
 def get_keys(bucket, interactive=False):
     """
     Get all keys, interactive adds some fancy graphics

@@ -64,6 +64,70 @@ class S3Dir(object):
         return "{} - Files: {} Dirs: {}".format(self.name, len(self.files), len(self.dirs))
 
 
+class S3Bucket(object):
+
+    def __init__(self, name, parent=None):
+        self.name = name
+        self.parent = parent
+        self.files = []
+        self.dirs = []
+        self.refreshed = False
+        self._size = 0
+        self._last_modified = None
+
+    def add_child(self, child):
+        if isinstance(child, S3File):
+            self.files.append(child)
+        elif isinstance(child, S3Dir):
+            self.dirs.append(child)
+        else:
+            raise "Attempted to add a bad child"
+        child.parent = self
+
+    def get_size(self):
+        if not self.refreshed:
+            return 0
+        if not self._size:
+            for f in self.files + self.dirs:
+                self._size = self._size + f.get_size()
+        return self._size
+
+    def get_last_modified(self):
+        if not self.refreshed:
+            return datetime.date.min
+        if not self._last_modified:
+            self._last_modified = datetime.datetime.min
+            for f in self.files + self.dirs:
+                if f.get_last_modified() > self._last_modified:
+                    self._last_modified = f.get_last_modified()
+        return self._last_modified
+
+    def __repr__(self):
+        return "{} - Refreshed: {} - Files: {} Dirs: {}".format(self.name, self.refreshed, len(self.files), len(self.dirs))
+
+
+class S3(object):
+
+    def __init__(self, name):
+        self.name = name
+        self.buckets = []
+
+    def add_child(self, child):
+        if isinstance(child, S3Bucket):
+            self.buckets.append(child)
+        else:
+            raise "Attempted to add a bad child"
+        child.parent = self
+
+    def get_child(self, name):
+        for bucket in self.buckets:
+            if bucket.name == name:
+                return bucket
+
+    def __repr__(self):
+        return "Top Level of S3"
+
+
 def add_key(node, key, partial_name):
     split_name = partial_name.split("/")
     if partial_name == "":
@@ -82,8 +146,7 @@ def add_key(node, key, partial_name):
         add_key(new_dir, key, new_name)
 
 
-def build_tree(bucket_name, keys):
-    base_node = S3Dir(bucket_name)
+def build_tree(base_node, keys):
     for key in keys:
         add_key(base_node, key, key.name)
     return base_node

@@ -6,8 +6,8 @@ import cmd
 from .util.list import parse_ls, print_files, complete_dir
 from .util.path import change_directory, get_pwd
 from .util.parsers import ls_parser
-from .util.s3 import get_keys
-from .util.tree import build_tree
+from .util.s3 import get_keys, get_buckets, get_bucket
+from .util.tree import build_tree, S3Bucket, S3
 from .helpers import print_help, print_result, color_green
 
 
@@ -17,13 +17,13 @@ get_input = raw_input
 
 class S3Browser(cmd.Cmd, object):
 
-    def __init__(self, bucket, connection):
+    def __init__(self, connection):
         super(S3Browser, self).__init__()
-        self.bucket = bucket
         self.connection = connection
         self.current_directory = None
+        self._top = S3("")
+        self._get_all_buckets()
         self._update_prompt()
-        self.keys = None
 
     def do_cd(self, line):
         node = change_directory(line, self.current_directory)
@@ -41,8 +41,29 @@ class S3Browser(cmd.Cmd, object):
 Changes the current directory.
 """)
 
+    def do_buckets(self, line):
+        if line == "":
+            for bucket in sorted(self._top.buckets):
+                print bucket.name
+        else:
+            self.current_directory = self._top.get_child(line)
+
+    def help_buckets(self):
+        print_help("""usage: buckets [<bucket_name>]
+
+Lists all known buckets or switches the current bucket to <bucket_name>
+""")
+
+    def complete_buckets(self, text, line, begidx, endidx):
+        buckets = sorted(self._top.buckets)
+        return [b.name for b in buckets if b.name.startswith(text)]
+
     def do_refresh(self, line):
-        self.current_directory = build_tree(self.bucket.name, get_keys(self.bucket, interactive=True))
+        bucket = self._top.get_child(line)
+        if bucket is None:
+            print "{} is not a valid bucket name!".format(line)
+        tree = build_tree(bucket, get_keys(get_bucket(bucket.name, self.connection), interactive=True))
+        self.current_directory = tree
 
     def help_refresh(self):
         print_help("""usage: refresh
@@ -85,10 +106,16 @@ Exit S3Browser
         if self.current_directory:
             self.prompt = '{} $ '.format(color_green(self.current_directory.name))
         else:
-            self.prompt = '{} $ '.format(color_green(self.bucket.name))
+            self.prompt = '{}$ '.format("")
 
     def postcmd(self, stop, line):
         self._update_prompt()
         return stop
 
     do_EOF = do_exit
+
+    def _get_all_buckets(self):
+        print "Getting all buckets!"
+        buckets = get_buckets(self.connection)
+        for bucket in buckets:
+            self._top.add_child(S3Bucket(bucket.name))

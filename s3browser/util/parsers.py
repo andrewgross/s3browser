@@ -5,15 +5,7 @@ from argparse import ArgumentParser
 
 
 def main_parser():
-    parser = ArgumentParser(prog="s3browser", description="Run S3Browser for the given bucket")
-
-    parser.add_argument(
-        "bucket",
-        metavar="BUCKET",
-        type=str,
-        help='Queues to process',
-        action="store",
-    )
+    parser = ArgumentParser(prog="s3browser", description="Run S3Browser")
 
     parser.add_argument(
         "--access-key-id",
