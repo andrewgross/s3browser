@@ -118,10 +118,10 @@ Exit S3Browser
 """)
 
     def _update_prompt(self):
-        if self.current_directory:
+        if self.current_directory.name:
             self.prompt = '{} $ '.format(color_green(self.current_directory.name))
         else:
-            self.prompt = '{}$ '.format("")
+            self.prompt = '$ '
 
     def postcmd(self, stop, line):
         self._update_prompt()
