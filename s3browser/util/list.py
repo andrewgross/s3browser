@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 
 from s3browser.util.parsers import ls_parser
-from s3browser.util.tree import S3Dir
-from s3browser.helpers import color_blue, print_result
+from s3browser.util.tree import S3Dir, S3Bucket
+from s3browser.helpers import color_blue, color_yellow, print_result
 
 
 def sort_files(files, key="name", reverse=False):
@@ -39,22 +39,13 @@ def print_files(current_directory, ls_args):
     files = current_directory.dirs + current_directory.files
     sorted_files = _sorted_files(files, ls_args)
     for f in sorted_files:
-        name = f.name
         last_modified = _format_date(f.get_last_modified())
         size = _format_size(f.get_size(), human=ls_args.human)
-        is_dir = _is_dir(f)
-        if is_dir:
-            name = color_blue(name)
+        name = _format_name(f)
         if ls_args.long:
             print_result(size, last_modified, name)
         else:
             print_result(name)
-
-
-def _is_dir(file):
-    if isinstance(file, S3Dir):
-        return True
-    return False
 
 
 def _sorted_files(files, ls_args):
@@ -71,7 +62,10 @@ def _format_date(date):
     """
     Converts a python datetime to a string
     """
-    return date.strftime("%Y-%m-%d %H:%M")
+    try:
+        return date.strftime("%Y-%m-%d %H:%M")
+    except ValueError:
+        return "????-??-?? ??:??"
 
 
 def _format_size(size, human=False):
@@ -88,3 +82,14 @@ def _format_size(size, human=False):
         return "{:>4}K".format(size / thousand)
     else:
         return "{:>4}B".format(size)
+
+
+def _format_name(file):
+    if isinstance(file, S3Bucket):
+        if file.refreshed:
+            return color_blue(file.name)
+        else:
+            return color_yellow(file.name)
+    elif isinstance(file, S3Dir):
+        return color_blue(file.name)
+    return file.name

@@ -15,21 +15,27 @@ def get_bucket(bucket, connection):
     return connection.get_bucket(bucket)
 
 
+def get_buckets(connection):
+    buckets = connection.get_all_buckets()
+    all_buckets = [b for b in buckets]
+    return all_buckets
+
+
 def get_keys(bucket, interactive=False):
     """
     Get all keys, interactive adds some fancy graphics
     """
-    all_keys = []
-    counter, timer = _interactive(interactive=interactive)
+    key_count = 0
+    counter, timer = _interactive(interactive=interactive, timer=datetime.datetime.min, key_count=key_count)
     for key in bucket:
-        all_keys.append(key)
-        counter, timer = _interactive(counter=counter, timer=timer, interactive=interactive)
+        yield key
+        counter, timer = _interactive(counter=counter, timer=timer, interactive=interactive, key_count=key_count)
+        key_count += 1
     if interactive:
         print "\nDone!"
-    return all_keys
 
 
-def _interactive(counter=0, timer=None, interactive=False):
+def _interactive(counter=0, timer=None, interactive=False, key_count=0):
     """
     Print a status banner, adding a . every second, resetting at 10
     """
@@ -40,24 +46,24 @@ def _interactive(counter=0, timer=None, interactive=False):
     if after_one_second and interactive:
         counter += 1
         counter = counter % 10
-        _print_progress_bar(counter)
+        _print_progress_bar(counter, key_count)
         timer = now
     return counter, timer
 
 
-def _get_ticker_string(counter):
+def _get_ticker_string(counter, key_count):
     """
     Print out our message while keeping a constant width string
     """
     anti_counter = 10 - counter
-    return "This can take a while.{}{}".format("." * counter, " " * anti_counter)
+    return "This can take a while.{}{} Keys Found: {}".format("." * counter, " " * anti_counter, key_count)
 
 
-def _print_progress_bar(counter):
+def _print_progress_bar(counter, key_count):
     """
     Print out a message overtop of the existing line
     """
-    ticker = _get_ticker_string(counter)
+    ticker = _get_ticker_string(counter, key_count)
     sys.stdout.write(ticker)
     sys.stdout.flush()
     sys.stdout.write("\b" * (len(ticker) + 1))  # Move back to the beginning of the line
