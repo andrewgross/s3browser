@@ -3,6 +3,7 @@
 
 S3Browser is a tool to help you browse your S3 Buckets like a local filesystem.  It features `cd`, `ls`, and `pwd` for now, with some added bonuses around showing rollups for directory sizes and the most recently modified file.  For now it is read only, though if you want any features feel free to suggest them.
 
+![](https://s3.amazonaws.com/captured-pics/tty.gif)
 
 ### Installation
 
