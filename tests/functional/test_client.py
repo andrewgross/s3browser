@@ -22,11 +22,11 @@ def test_refresh():
     bucket, conn = populate_bucket('mybucket', keys)
 
     # And I have a client
-    c = S3Browser(bucket, conn)
+    c = S3Browser(conn)
 
     # When I refresh
     with silence_stdout():
-        c.do_refresh("")
+        c.do_refresh("mybucket")
 
     # Then I get all of my keys
     len(c.current_directory.files).should.equal(2)
@@ -41,17 +41,17 @@ def test_pwd(output):
     # When I have a client
     keys = ["foo", "bar"]
     bucket, conn = populate_bucket('mybucket', keys)
-    c = S3Browser(bucket, conn)
+    c = S3Browser(conn)
 
     # And I have files
     with silence_stdout():
-        c.do_refresh("")
+        c.do_refresh("mybucket")
 
     # When I call pwd
     c.do_pwd("")
 
     # Then I get the top level bucket name
-    output.assert_called_once_with("mybucket")
+    output.assert_called_once_with("/mybucket")
 
 
 @mock_s3
@@ -63,13 +63,13 @@ def test_ls(output):
     # When I have a client
     keys = ["foo", "bar"]
     bucket, conn = populate_bucket('mybucket', keys)
-    c = S3Browser(bucket, conn)
+    c = S3Browser(conn)
 
     # And I have no current directory
     current_directory = ""
     c.current_directory = current_directory
     with silence_stdout():
-        c.do_refresh("")
+        c.do_refresh("mybucket")
 
     # When I call ls
     c.do_ls("")
@@ -88,13 +88,13 @@ def test_ls_directory(output):
     # When I have a client
     keys = ["baz", "foo/bar"]
     bucket, conn = populate_bucket('mybucket', keys)
-    c = S3Browser(bucket, conn)
+    c = S3Browser(conn)
 
     # And I have no current directory
     current_directory = ""
     c.current_directory = current_directory
     with silence_stdout():
-        c.do_refresh("")
+        c.do_refresh("mybucket")
 
     # When I call ls
     c.do_ls("")
@@ -114,13 +114,13 @@ def test_ls_l(output):
     # When I have a client
     keys = ["foo", "bar"]
     bucket, conn = populate_bucket('mybucket', keys)
-    c = S3Browser(bucket, conn)
+    c = S3Browser(conn)
 
     # And I have no current directory
     current_directory = ""
     c.current_directory = current_directory
     with silence_stdout():
-        c.do_refresh("")
+        c.do_refresh("mybucket")
 
     # When I call ls
     c.do_ls("-l")
@@ -140,13 +140,13 @@ def test_ls_lh(output):
     # When I have a client
     keys = ["foo", "bar"]
     bucket, conn = populate_bucket('mybucket', keys)
-    c = S3Browser(bucket, conn)
+    c = S3Browser(conn)
 
     # And I have no current directory
     current_directory = ""
     c.current_directory = current_directory
     with silence_stdout():
-        c.do_refresh("")
+        c.do_refresh("mybucket")
 
     # When I call ls
     c.do_ls("-lh")
@@ -166,13 +166,13 @@ def test_ls_lhsr(output):
     # When I have a client
     keys = ["fooz", "bar"]
     bucket, conn = populate_bucket('mybucket', keys)
-    c = S3Browser(bucket, conn)
+    c = S3Browser(conn)
 
     # And I have no current directory
     current_directory = ""
     c.current_directory = current_directory
     with silence_stdout():
-        c.do_refresh("")
+        c.do_refresh("mybucket")
 
     # When I call ls
     c.do_ls("-lhSr")
@@ -198,13 +198,13 @@ def test_ls_lht(output):
     with freeze_time("2016-07-10 03:39:34"):
         keys = ["old"]
         bucket, conn = populate_bucket('mybucket', keys)
-    c = S3Browser(bucket, conn)
+    c = S3Browser(conn)
 
     # And I have no current directory
     current_directory = ""
     c.current_directory = current_directory
     with silence_stdout():
-        c.do_refresh("")
+        c.do_refresh("mybucket")
 
     # When I call ls
     c.do_ls("-lht")
@@ -227,13 +227,13 @@ def test_ls_l_size(output):
     # When I have a client
     keys = ["foo/bar", "foo/baz", "foo2"]
     bucket, conn = populate_bucket('mybucket', keys)
-    c = S3Browser(bucket, conn)
+    c = S3Browser(conn)
 
     # And I have no current directory
     current_directory = ""
     c.current_directory = current_directory
     with silence_stdout():
-        c.do_refresh("")
+        c.do_refresh("mybucket")
 
     # When I call ls
     c.do_ls("-l")
@@ -256,9 +256,9 @@ def test_ls_nested(output):
     # When I have a client
     keys = ["foo/foo/bar/baz", "foo/bar2", "foo/baz2/baz3", "banana"]
     bucket, conn = populate_bucket('mybucket', keys)
-    c = S3Browser(bucket, conn)
+    c = S3Browser(conn)
     with silence_stdout():
-        c.do_refresh("")
+        c.do_refresh("mybucket")
 
     # And I have a current directory
     c.do_cd("foo")
